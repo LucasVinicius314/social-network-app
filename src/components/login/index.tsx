@@ -17,6 +17,7 @@ import { SafeAreaView, ScrollView, StyleSheet } from 'react-native'
 import { RootParamList } from '../../navigation/Root'
 import { RouteProp } from '@react-navigation/native'
 import { StackNavigationProp } from '@react-navigation/stack'
+import { doLogin } from '../../utils/requests'
 
 type LoginScreenNavigationProp = StackNavigationProp<RootParamList, 'Login'>
 type LoginScreenRouteProp = RouteProp<RootParamList, 'Login'>
@@ -31,6 +32,10 @@ const Login = (props: Props) => {
   const [password, setPassword] = React.useState<string>('')
 
   const { colors } = useTheme()
+
+  const login = () => {
+    doLogin({ email: email, password: password })
+  }
 
   return (
     <SafeAreaView>
@@ -51,7 +56,9 @@ const Login = (props: Props) => {
               value={password}
               label='Password'
             />
-            <Button mode='contained'>Login</Button>
+            <Button mode='contained' onPress={login}>
+              Login
+            </Button>
           </KeyboardView>
         </ScrollView>
       </Surface>
