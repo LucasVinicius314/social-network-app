@@ -1815,13 +1815,14 @@
     color "^3.1.3"
     react-native-iphone-x-helper "^1.3.0"
 
-"@suresure/react-native-components@^1.0.7":
-  version "1.0.7"
-  resolved "https://registry.yarnpkg.com/@suresure/react-native-components/-/react-native-components-1.0.7.tgz#bc285b55c68e020d64fc98ea31cfdfaaf2f8ed49"
-  integrity sha512-zQMQWbBAUwFHbYkFNXw11Se/dFXdFK3kKrmS+vO3svi/AcwjF+AOMi2pw4J+be2KZ7+cSz1umSpVS/u2lEiGkg==
+"@suresure/react-native-components@^1.0.9":
+  version "1.0.9"
+  resolved "https://registry.yarnpkg.com/@suresure/react-native-components/-/react-native-components-1.0.9.tgz#7bea38106a21f04523d8f981681793562e8ab23e"
+  integrity sha512-15PCJt7Lb/pOrhivZ0y4F1B5nYNW48BtE8MeVDYLURVh/Dai4vTwt6x6btEJGU/vIIOrqx+l4ZtQcd5x3ee6SQ==
   dependencies:
     "@react-navigation/native" "^5.9.1"
     react-native-masked-text "^1.13.0"
+    react-native-paper "^4.7.2"
 
 "@types/hammerjs@^2.0.36":
   version "2.0.39"

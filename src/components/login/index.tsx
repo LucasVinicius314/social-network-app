@@ -1,8 +1,19 @@
-import { Button, Headline, TextInput } from 'react-native-paper'
-import { SafeAreaView, ScrollView, StyleSheet } from 'react-native'
-import { StatusBar, Unmasked } from '@suresure/react-native-components'
+import * as React from 'react'
 
-import React from 'react'
+import {
+  Button,
+  Headline,
+  Surface,
+  TextInput,
+  useTheme,
+} from 'react-native-paper'
+import {
+  KeyboardView,
+  MDTextInput,
+  StatusBar,
+} from '@suresure/react-native-components'
+import { SafeAreaView, ScrollView, StyleSheet } from 'react-native'
+
 import { RootParamList } from '../../navigation/Root'
 import { RouteProp } from '@react-navigation/native'
 import { StackNavigationProp } from '@react-navigation/stack'
@@ -19,40 +30,45 @@ const Login = (props: Props) => {
   const [email, setEmail] = React.useState<string>('')
   const [password, setPassword] = React.useState<string>('')
 
+  const { colors } = useTheme()
+
   return (
     <SafeAreaView>
       <StatusBar />
-      <ScrollView contentContainerStyle={styles.scrollViewContent}>
-        <Headline>Email</Headline>
-        <Unmasked
-          onChangeText={setEmail}
-          style={styles.textInput}
-          keyboardType='email-address'
-        />
-        <Headline>Password</Headline>
-        {/* <Unmasked
-          onChangeText={setPassword}
-          style={styles.textInput}
-          secureTextEntry
-        /> */}
-        <TextInput label='Password' mode='flat' />
-        <Button mode='contained'>asad</Button>
-      </ScrollView>
+      <Surface style={styles.surface}>
+        <ScrollView contentContainerStyle={styles.scrollViewContent}>
+          <KeyboardView>
+            <MDTextInput
+              onChangeText={setEmail}
+              style={styles.textInput}
+              keyboardType='email-address'
+              value={email}
+              label='Email'
+            />
+            <MDTextInput
+              onChangeText={setPassword}
+              style={styles.textInput}
+              value={password}
+              label='Password'
+            />
+            <Button mode='contained'>Login</Button>
+          </KeyboardView>
+        </ScrollView>
+      </Surface>
     </SafeAreaView>
   )
 }
 
 const styles = StyleSheet.create({
   scrollViewContent: {
-    paddingHorizontal: 20,
+    paddingHorizontal: 10,
+    paddingVertical: 20,
   },
   textInput: {
-    paddingVertical: 10,
-    paddingHorizontal: 10,
-    color: 'white',
-    backgroundColor: '#222222',
-    fontSize: 30,
     marginBottom: 20,
+  },
+  surface: {
+    height: '100%',
   },
 })
 
