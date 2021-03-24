@@ -4,6 +4,9 @@ import { LoginInfo } from '../typescript'
 type GetLoginInfo = () => Promise<LoginInfo | null>
 type SetLoginInfo = (loginInfo: LoginInfo) => Promise<void>
 
+type GetToken = () => Promise<string | null>
+type SetToken = (token: string) => Promise<void>
+
 const getLoginInfo: GetLoginInfo = async () => {
   const loginInfo = (await AsyncStorage.getItem(
     'login_info'
@@ -18,4 +21,13 @@ const setLoginInfo: SetLoginInfo = async (loginInfo: LoginInfo) => {
   ))
 }
 
-export { getLoginInfo, setLoginInfo }
+const getToken: GetToken = async () => {
+  const token = (await AsyncStorage.getItem('token')) as string | null
+  return token
+}
+
+const setToken: SetToken = async (token: string) => {
+  return void (await AsyncStorage.setItem('token', token))
+}
+
+export { getLoginInfo, setLoginInfo, getToken, setToken }

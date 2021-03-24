@@ -11,7 +11,7 @@ import { SafeAreaView, ScrollView, StyleSheet } from 'react-native'
 import { RootParamList } from '../../navigation/Root'
 import { RouteProp } from '@react-navigation/native'
 import { StackNavigationProp } from '@react-navigation/stack'
-import { doLogin } from '../../utils/requests'
+import { doRegister } from '../../utils/requests'
 
 type LoginScreenNavigationProp = StackNavigationProp<RootParamList, 'Login'>
 type LoginScreenRouteProp = RouteProp<RootParamList, 'Login'>
@@ -21,14 +21,15 @@ type Props = {
   route: LoginScreenRouteProp
 }
 
-const Login = (props: Props) => {
+const Register = (props: Props) => {
   const [email, setEmail] = React.useState<string>('')
   const [password, setPassword] = React.useState<string>('')
+  const [username, setUsername] = React.useState<string>('')
 
   const { colors } = useTheme()
 
-  const login = () => {
-    doLogin({ email: email, password: password })
+  const register = () => {
+    doRegister({ email: email, password: password, username: username })
   }
 
   return (
@@ -37,6 +38,12 @@ const Login = (props: Props) => {
       <Surface style={styles.surface}>
         <ScrollView contentContainerStyle={styles.scrollViewContent}>
           <KeyboardView>
+            <MDTextInput
+              onChangeText={setUsername}
+              style={styles.textInput}
+              value={username}
+              label='Username'
+            />
             <MDTextInput
               onChangeText={setEmail}
               style={styles.textInput}
@@ -50,8 +57,8 @@ const Login = (props: Props) => {
               value={password}
               label='Password'
             />
-            <Button mode='contained' onPress={login}>
-              Login
+            <Button mode='contained' onPress={register}>
+              Register
             </Button>
           </KeyboardView>
         </ScrollView>
@@ -73,4 +80,4 @@ const styles = StyleSheet.create({
   },
 })
 
-export default Login
+export default Register

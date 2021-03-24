@@ -6,6 +6,7 @@ import { NavigationContainer } from '@react-navigation/native'
 import { Provider as PaperProvider } from 'react-native-paper'
 import React from 'react'
 import RootNavigator from './src/navigation/Root'
+import { doLogin } from './src/utils/requests'
 
 const App = () => {
   return (
