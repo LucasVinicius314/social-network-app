@@ -1,3 +1,6 @@
+import { Dispatch } from 'react'
+import { SetStateAction } from 'react'
+
 export type Log = 'none' | 'all'
 
 export type Config = {
@@ -14,7 +17,7 @@ export type LoginInfo = {
 export type AppContext = {
   user?: Responses.UserRegister
   app?: {
-    setUser: (user: Responses.UserRegister) => {}
+    setUser: Dispatch<SetStateAction<Responses.UserRegister | undefined>>
   }
 }
 
