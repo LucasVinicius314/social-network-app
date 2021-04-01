@@ -1,5 +1,7 @@
-import axios from 'axios'
+import axios, { AxiosResponse } from 'axios'
+
 import { config } from '../config'
+import { log } from '../utils/log'
 
 const instance = axios.create({
   baseURL: config.API_URL,
@@ -9,18 +11,19 @@ const instance = axios.create({
 })
 
 instance.interceptors.request.use((request) => {
-  // console.log(request)
+  // log(request)
   return request
 })
 
 instance.interceptors.response.use(
   (response) => {
-    console.log(response)
+    log(response.config.url)
+    log(response.data)
     return response
   },
-  (error) => {
-    console.log(JSON.parse(JSON.stringify(error)))
-    return error
+  ({ response }) => {
+    log(response)
+    return response as AxiosResponse
   }
 )
 

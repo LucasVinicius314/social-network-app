@@ -6,12 +6,15 @@ import {
   MDTextInput,
   StatusBar,
 } from '@suresure/react-native-components'
+import { Requests, Responses } from '../../typescript'
 import { SafeAreaView, ScrollView, StyleSheet } from 'react-native'
 
+import { AxiosResponse } from 'axios'
 import { RootParamList } from '../../navigation/Root'
 import { RouteProp } from '@react-navigation/native'
 import { StackNavigationProp } from '@react-navigation/stack'
 import { doLogin } from '../../utils/requests'
+import { log } from '../../utils/log'
 
 type LoginScreenNavigationProp = StackNavigationProp<RootParamList, 'Login'>
 type LoginScreenRouteProp = RouteProp<RootParamList, 'Login'>
@@ -28,7 +31,17 @@ const Login = (props: Props) => {
   const { colors } = useTheme()
 
   const login = () => {
-    doLogin({ email: email, password: password })
+    doLogin({ email: email, password: password }).then(({ data, status }) => {
+      if (status !== 200) {
+        alert(data.message)
+      } else {
+        alert(data.message)
+      }
+    })
+  }
+
+  const goToCreateAcoount = () => {
+    props.navigation.navigate('Register')
   }
 
   return (
@@ -50,8 +63,14 @@ const Login = (props: Props) => {
               value={password}
               label='Password'
             />
-            <Button mode='contained' onPress={login}>
+            <Button mode='contained' onPress={login} style={styles.button}>
               Login
+            </Button>
+            <Button
+              mode='text'
+              onPress={goToCreateAcoount}
+              style={styles.button}>
+              Create Account
             </Button>
           </KeyboardView>
         </ScrollView>
@@ -63,13 +82,16 @@ const Login = (props: Props) => {
 const styles = StyleSheet.create({
   scrollViewContent: {
     paddingHorizontal: 10,
-    paddingVertical: 20,
+    paddingVertical: 10,
   },
   textInput: {
     marginBottom: 20,
   },
   surface: {
     height: '100%',
+  },
+  button: {
+    marginBottom: 10,
   },
 })
 

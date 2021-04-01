@@ -1,20 +1,13 @@
-import { Requests } from '../typescript'
+import { Requests, Responses } from '../typescript'
+
 import { instance as axios } from '../services/axios'
 
-type ResponseBase = {
-  message: string
+const doLogin = (loginParams: Requests.Login) => {
+  return axios.post<Responses.Base>('/user/login', loginParams)
 }
 
-type DoLoginRequest = (loginParams: Requests.Login) => Promise<ResponseBase>
-type DoRegisterRequest = (
-  registerParams: Requests.Register
-) => Promise<ResponseBase>
-
-const doLogin: DoLoginRequest = async (loginParams) => {
-  return (await axios.post<ResponseBase>('/user/login', loginParams)).data
-}
-const doRegister: DoRegisterRequest = async (registerParams) => {
-  return (await axios.post<ResponseBase>('/user/register', registerParams)).data
+const doRegister = (registerParams: Requests.Register) => {
+  return axios.post<Responses.Base>('/user/register', registerParams)
 }
 
 export { doLogin, doRegister }

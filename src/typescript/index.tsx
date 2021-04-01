@@ -1,5 +1,9 @@
+export type Log = 'none' | 'all'
+
 export type Config = {
   API_URL: string
+  CHANNEL: string | undefined
+  LOG: Log
 }
 
 export type LoginInfo = {
@@ -18,5 +22,11 @@ export namespace Requests {
   export type Login = {
     email: string
     password: string
+  }
+}
+
+export namespace Responses {
+  export type Base = {
+    message: string
   }
 }

@@ -29,7 +29,15 @@ const Register = (props: Props) => {
   const { colors } = useTheme()
 
   const register = () => {
-    doRegister({ email: email, password: password, username: username })
+    doRegister({ email: email, password: password, username: username }).then(
+      ({ data, status }) => {
+        if (status === 200) {
+          props.navigation.goBack()
+        } else {
+          alert(data.message)
+        }
+      }
+    )
   }
 
   return (
@@ -58,7 +66,7 @@ const Register = (props: Props) => {
               label='Password'
             />
             <Button mode='contained' onPress={register}>
-              Register
+              Create Account
             </Button>
           </KeyboardView>
         </ScrollView>
@@ -70,7 +78,7 @@ const Register = (props: Props) => {
 const styles = StyleSheet.create({
   scrollViewContent: {
     paddingHorizontal: 10,
-    paddingVertical: 20,
+    paddingVertical: 10,
   },
   textInput: {
     marginBottom: 20,
