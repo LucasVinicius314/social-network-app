@@ -10,6 +10,7 @@ import { Requests, Responses } from '../../typescript'
 import { SafeAreaView, ScrollView, StyleSheet } from 'react-native'
 
 import { AxiosResponse } from 'axios'
+import { Context } from '../../context/appcontext'
 import { RootParamList } from '../../navigation/Root'
 import { RouteProp } from '@react-navigation/native'
 import { StackNavigationProp } from '@react-navigation/stack'
@@ -30,10 +31,13 @@ const Login = (props: Props) => {
 
   const { colors } = useTheme()
 
+  const context = React.useContext(Context)
+
   const login = () => {
     doLogin({ email: email, password: password }).then(({ data, status }) => {
-      if (status !== 200) {
-        alert(data.message)
+      if (status === 200) {
+        context.app?.setUser(data)
+        props.navigation.navigate('Drawer')
       } else {
         alert(data.message)
       }
@@ -85,7 +89,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
   },
   textInput: {
-    marginBottom: 20,
+    marginBottom: 10,
   },
   surface: {
     height: '100%',

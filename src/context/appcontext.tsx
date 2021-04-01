@@ -6,4 +6,4 @@ const _context: AppContext = {}
 
 const context = React.createContext<AppContext>(_context)
 
-export { context }
+export { context as Context }

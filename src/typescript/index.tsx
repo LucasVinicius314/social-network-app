@@ -11,7 +11,12 @@ export type LoginInfo = {
   password: string
 }
 
-export type AppContext = {}
+export type AppContext = {
+  user?: Responses.UserRegister
+  app?: {
+    setUser: (user: Responses.UserRegister) => {}
+  }
+}
 
 export namespace Requests {
   export type Register = {
@@ -28,5 +33,12 @@ export namespace Requests {
 export namespace Responses {
   export type Base = {
     message: string
+  }
+  export type UserRegister = {
+    createdAt: string
+    email: string
+    id: number
+    updatedAt: string
+    username: string
   }
 }

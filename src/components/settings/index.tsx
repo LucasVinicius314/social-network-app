@@ -6,12 +6,15 @@ import {
   MDTextInput,
   StatusBar,
 } from '@suresure/react-native-components'
+import { Requests, Responses } from '../../typescript'
 import { SafeAreaView, ScrollView, StyleSheet } from 'react-native'
 
+import { AxiosResponse } from 'axios'
 import { RootParamList } from '../../navigation/Root'
 import { RouteProp } from '@react-navigation/native'
 import { StackNavigationProp } from '@react-navigation/stack'
-import { doRegister } from '../../utils/requests'
+import { doLogin } from '../../utils/requests'
+import { log } from '../../utils/log'
 
 type LoginScreenNavigationProp = StackNavigationProp<RootParamList, 'Login'>
 type LoginScreenRouteProp = RouteProp<RootParamList, 'Login'>
@@ -21,23 +24,24 @@ type Props = {
   route: LoginScreenRouteProp
 }
 
-const Register = (props: Props) => {
+const Login = (props: Props) => {
   const [email, setEmail] = React.useState<string>('')
   const [password, setPassword] = React.useState<string>('')
-  const [username, setUsername] = React.useState<string>('')
 
   const { colors } = useTheme()
 
-  const register = () => {
-    doRegister({ email: email, password: password, username: username }).then(
-      ({ data, status }) => {
-        if (status === 200) {
-          props.navigation.goBack()
-        } else {
-          alert(data.message)
-        }
+  const login = () => {
+    doLogin({ email: email, password: password }).then(({ data, status }) => {
+      if (status !== 200) {
+        alert(data.message)
+      } else {
+        alert(data.message)
       }
-    )
+    })
+  }
+
+  const goToCreateAcoount = () => {
+    props.navigation.navigate('Register')
   }
 
   return (
@@ -46,12 +50,6 @@ const Register = (props: Props) => {
       <Surface style={styles.surface}>
         <ScrollView contentContainerStyle={styles.scrollViewContent}>
           <KeyboardView>
-            <MDTextInput
-              onChangeText={setUsername}
-              style={styles.textInput}
-              value={username}
-              label='Username'
-            />
             <MDTextInput
               onChangeText={setEmail}
               style={styles.textInput}
@@ -65,7 +63,13 @@ const Register = (props: Props) => {
               value={password}
               label='Password'
             />
-            <Button mode='contained' onPress={register}>
+            <Button mode='contained' onPress={login} style={styles.button}>
+              Login
+            </Button>
+            <Button
+              mode='text'
+              onPress={goToCreateAcoount}
+              style={styles.button}>
               Create Account
             </Button>
           </KeyboardView>
@@ -86,6 +90,9 @@ const styles = StyleSheet.create({
   surface: {
     height: '100%',
   },
+  button: {
+    marginBottom: 10,
+  },
 })
 
-export default Register
+export default Login
