@@ -1,4 +1,5 @@
 import axios, { AxiosResponse } from 'axios'
+import { getToken, setToken } from '../utils/asyncstorage'
 
 import { config } from '../config'
 import { log } from '../utils/log'
@@ -10,13 +11,17 @@ const instance = axios.create({
   },
 })
 
-instance.interceptors.request.use((request) => {
-  // log(request)
+instance.interceptors.request.use(async (request) => {
+  request.headers.authorization = await getToken()
   return request
 })
 
 instance.interceptors.response.use(
-  (response) => {
+  async (response) => {
+    const authorization = response.headers.authorization
+    if (authorization) {
+      await setToken(authorization)
+    }
     log(response.config.url)
     log(response.data)
     return response
