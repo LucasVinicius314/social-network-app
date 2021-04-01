@@ -10,6 +10,7 @@ import { Responses } from './src/typescript'
 import RootNavigator from './src/navigation/Root'
 
 const App = () => {
+  const [logged, setLogged] = React.useState<boolean>(false)
   const [user, setUser] = React.useState<Responses.UserRegister | undefined>(
     undefined
   )
@@ -18,8 +19,10 @@ const App = () => {
     <Context.Provider
       value={{
         user: user,
+        logged: logged,
         app: {
           setUser: setUser,
+          setLogged: setLogged,
         },
       }}>
       <PaperProvider theme={paperTheme}>

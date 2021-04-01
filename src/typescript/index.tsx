@@ -16,8 +16,10 @@ export type LoginInfo = {
 
 export type AppContext = {
   user?: Responses.UserRegister
+  logged: boolean
   app?: {
     setUser: Dispatch<SetStateAction<Responses.UserRegister | undefined>>
+    setLogged: Dispatch<SetStateAction<boolean>>
   }
 }
 

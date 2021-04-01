@@ -37,7 +37,7 @@ const Login = (props: Props) => {
     doLogin({ email: email, password: password }).then(({ data, status }) => {
       if (status === 200) {
         context.app?.setUser(data)
-        props.navigation.navigate('Drawer')
+        context.app?.setLogged(true)
       } else {
         alert(data.message)
       }
