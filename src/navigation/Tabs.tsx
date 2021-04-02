@@ -1,5 +1,8 @@
+import * as Icons from '@expo/vector-icons'
+
 import { CompositeNavigationProp, RouteProp } from '@react-navigation/core'
 
+import { Avatar } from 'react-native-paper'
 import Chats from '../components/chats'
 import { DrawerNavigationProp } from '@react-navigation/drawer'
 import { DrawerParamList } from './Drawer'
@@ -25,11 +28,39 @@ type Props = {
   route: Route
 }
 
+const resolveIcon = ({
+  color,
+  size,
+  name,
+}: {
+  color: string
+  size: number
+  focused: boolean
+  name: keyof TabsParamList
+}) => {
+  switch (name) {
+    case 'Chats':
+      return <Icons.MaterialIcons name='chat' size={size} color={color} />
+    case 'Posts':
+      return (
+        <Icons.MaterialCommunityIcons
+          name='file-document'
+          size={size}
+          color={color}
+        />
+      )
+  }
+}
+
 const { Navigator, Screen } = createBottomTabNavigator<TabsParamList>()
 
 const Drawer = (props: Props) => {
   return (
-    <Navigator>
+    <Navigator
+      screenOptions={({ route }) => ({
+        tabBarIcon: ({ color, size, focused }) =>
+          resolveIcon({ color, focused, name: route.name, size }),
+      })}>
       <Screen name='Posts' component={Posts} />
       <Screen name='Chats' component={Chats} />
     </Navigator>

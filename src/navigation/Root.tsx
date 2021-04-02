@@ -20,13 +20,8 @@ export type RootParamList = {
   Register: undefined
 }
 
-const resolveRouteName = (
-  route: RouteProp<RootParamList, keyof RootParamList>
-) => {
-  const _route = getFocusedRouteNameFromRoute(route) as keyof (DrawerParamList &
-    RootParamList)
-  console.log(_route)
-  switch (_route) {
+const resolveRouteName = (route: keyof (DrawerParamList & RootParamList)) => {
+  switch (route) {
     case 'Comments':
       return 'Comments'
     case 'Drawer':
@@ -55,34 +50,33 @@ const Root = () => {
   return (
     <Navigator
       screenOptions={(props) => ({
-        header: (headerProps) => (
-          <Appbar theme={useTheme()}>
-            {props.route.name === 'Drawer' && (
-              <Appbar.Action
-                icon='menu'
-                onPress={() =>
-                  headerProps.navigation.dispatch(DrawerActions.toggleDrawer)
-                }
+        header: (headerProps) => {
+          const name = getFocusedRouteNameFromRoute(
+            props.route
+          ) as keyof (DrawerParamList & RootParamList)
+          return (
+            <Appbar theme={useTheme()}>
+              {props.route.name === 'Drawer' && (
+                <Appbar.Action
+                  icon='menu'
+                  onPress={() =>
+                    headerProps.navigation.dispatch(DrawerActions.toggleDrawer)
+                  }
+                />
+              )}
+              {headerProps.navigation.canGoBack() && (
+                <Appbar.BackAction onPress={headerProps.navigation.goBack} />
+              )}
+              <Appbar.Content
+                title={resolveRouteName(name || props.route.name) || 'Home'}
               />
-            )}
-            {headerProps.navigation.canGoBack() && (
-              <Appbar.BackAction onPress={headerProps.navigation.goBack} />
-            )}
-            <Appbar.Content
-              title={resolveRouteName(props.route) || props.route.name}
-            />
-          </Appbar>
-        ),
+            </Appbar>
+          )
+        },
       })}>
       {context.logged ? (
         <>
-          <Screen
-            name='Drawer'
-            component={Drawer}
-            options={({ route }) => ({
-              headerTitle: resolveRouteName(route),
-            })}
-          />
+          <Screen name='Drawer' component={Drawer} />
           <Screen name='Comments' component={Comments} />
           <Screen name='Profile' component={Profile} />
         </>
