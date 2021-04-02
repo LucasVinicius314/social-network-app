@@ -8,17 +8,18 @@ import {
 } from '@suresure/react-native-components'
 import { SafeAreaView, ScrollView, StyleSheet } from 'react-native'
 
+import { Context } from '../../context/appcontext'
 import { RootParamList } from '../../navigation/Root'
 import { RouteProp } from '@react-navigation/native'
 import { StackNavigationProp } from '@react-navigation/stack'
 import { doRegister } from '../../utils/requests'
 
-type LoginScreenNavigationProp = StackNavigationProp<RootParamList, 'Login'>
-type LoginScreenRouteProp = RouteProp<RootParamList, 'Login'>
+type Navigation = StackNavigationProp<RootParamList, 'Login'>
+type Route = RouteProp<RootParamList, 'Login'>
 
 type Props = {
-  navigation: LoginScreenNavigationProp
-  route: LoginScreenRouteProp
+  navigation: Navigation
+  route: Route
 }
 
 const Register = (props: Props) => {
@@ -28,11 +29,14 @@ const Register = (props: Props) => {
 
   const { colors } = useTheme()
 
+  const context = React.useContext(Context)
+
   const register = () => {
     doRegister({ email: email, password: password, username: username }).then(
       ({ data, status }) => {
         if (status === 200) {
-          props.navigation.goBack()
+          context.app?.setUser(data)
+          context.app?.setLogged(true)
         } else {
           alert(data.message)
         }

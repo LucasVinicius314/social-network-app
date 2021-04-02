@@ -10,7 +10,10 @@ const doLogin = (loginParams: Requests.Login) => {
 }
 
 const doRegister = (registerParams: Requests.Register) => {
-  return axios.post<Responses.Base>('/user/register', registerParams)
+  return axios.post<Responses.Base & Responses.UserRegister>(
+    '/user/register',
+    registerParams
+  )
 }
 
 export { doLogin, doRegister }

@@ -10,34 +10,30 @@ import { Requests, Responses } from '../../typescript'
 import { SafeAreaView, ScrollView, StyleSheet } from 'react-native'
 
 import { AxiosResponse } from 'axios'
-import { Context } from '../../context/appcontext'
 import { RootParamList } from '../../navigation/Root'
 import { RouteProp } from '@react-navigation/native'
 import { StackNavigationProp } from '@react-navigation/stack'
 import { doLogin } from '../../utils/requests'
 import { log } from '../../utils/log'
 
-type Navigation = StackNavigationProp<RootParamList, 'Login'>
-type Route = RouteProp<RootParamList, 'Login'>
+type LoginScreenNavigationProp = StackNavigationProp<RootParamList, 'Login'>
+type LoginScreenRouteProp = RouteProp<RootParamList, 'Login'>
 
 type Props = {
-  navigation: Navigation
-  route: Route
+  navigation: LoginScreenNavigationProp
+  route: LoginScreenRouteProp
 }
 
-const Login = (props: Props) => {
+const Feed = (props: Props) => {
   const [email, setEmail] = React.useState<string>('')
   const [password, setPassword] = React.useState<string>('')
 
   const { colors } = useTheme()
 
-  const context = React.useContext(Context)
-
   const login = () => {
     doLogin({ email: email, password: password }).then(({ data, status }) => {
-      if (status === 200) {
-        context.app?.setUser(data)
-        context.app?.setLogged(true)
+      if (status !== 200) {
+        alert(data.message)
       } else {
         alert(data.message)
       }
@@ -99,4 +95,4 @@ const styles = StyleSheet.create({
   },
 })
 
-export default Login
+export default Feed

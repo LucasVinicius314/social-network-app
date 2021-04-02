@@ -1,6 +1,6 @@
 import Drawer, { DrawerParamList } from './Drawer'
-import { RouteProp, getFocusedRouteNameFromRoute } from '@react-navigation/core'
 
+import Account from '../components/account'
 import { Appbar } from 'react-native-paper'
 import Comments from '../components/comments'
 import { Context } from '../context/appcontext'
@@ -10,9 +10,11 @@ import Profile from '../components/profile'
 import React from 'react'
 import Register from '../components/register'
 import { createStackNavigator } from '@react-navigation/stack'
+import { getFocusedRouteNameFromRoute } from '@react-navigation/core'
 import { useTheme } from 'react-native-paper'
 
 export type RootParamList = {
+  Account: undefined
   Comments: undefined
   Drawer: undefined
   Login: undefined
@@ -22,6 +24,8 @@ export type RootParamList = {
 
 const resolveRouteName = (route: keyof (DrawerParamList & RootParamList)) => {
   switch (route) {
+    case 'Account':
+      return 'Edit Profile'
     case 'Comments':
       return 'Comments'
     case 'Drawer':
@@ -79,6 +83,7 @@ const Root = () => {
           <Screen name='Drawer' component={Drawer} />
           <Screen name='Comments' component={Comments} />
           <Screen name='Profile' component={Profile} />
+          <Screen name='Account' component={Account} />
         </>
       ) : (
         <>

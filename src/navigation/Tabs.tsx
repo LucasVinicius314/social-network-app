@@ -2,19 +2,20 @@ import * as Icons from '@expo/vector-icons'
 
 import { CompositeNavigationProp, RouteProp } from '@react-navigation/core'
 
-import { Avatar } from 'react-native-paper'
 import Chats from '../components/chats'
 import { DrawerNavigationProp } from '@react-navigation/drawer'
 import { DrawerParamList } from './Drawer'
-import Posts from '../components/posts'
+import Explore from '../components/explore'
+import Feed from '../components/feed'
 import React from 'react'
 import { RootParamList } from './Root'
 import { StackNavigationProp } from '@react-navigation/stack'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 
 export type TabsParamList = {
-  Posts: undefined
   Chats: undefined
+  Explore: undefined
+  Feed: undefined
 }
 
 type Navigation = CompositeNavigationProp<
@@ -41,7 +42,9 @@ const resolveIcon = ({
   switch (name) {
     case 'Chats':
       return <Icons.MaterialIcons name='chat' size={size} color={color} />
-    case 'Posts':
+    case 'Explore':
+      return <Icons.MaterialIcons name='explore' size={size} color={color} />
+    case 'Feed':
       return (
         <Icons.MaterialCommunityIcons
           name='file-document'
@@ -61,7 +64,8 @@ const Drawer = (props: Props) => {
         tabBarIcon: ({ color, size, focused }) =>
           resolveIcon({ color, focused, name: route.name, size }),
       })}>
-      <Screen name='Posts' component={Posts} />
+      <Screen name='Feed' component={Feed} />
+      <Screen name='Explore' component={Explore} />
       <Screen name='Chats' component={Chats} />
     </Navigator>
   )
