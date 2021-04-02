@@ -6,6 +6,7 @@ const _context: AppContext = {
   logged: false,
   selectedTab: 'Feed',
   theme: 'light',
+  posts: [],
 }
 
 const context = React.createContext<AppContext>(_context)

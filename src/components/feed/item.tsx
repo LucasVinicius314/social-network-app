@@ -1,6 +1,15 @@
 import * as React from 'react'
 
-import { Button, Headline, Surface, useTheme } from 'react-native-paper'
+import {
+  Avatar,
+  Button,
+  Card,
+  Headline,
+  IconButton,
+  Paragraph,
+  Surface,
+  useTheme,
+} from 'react-native-paper'
 import {
   KeyboardView,
   MDTextInput,
@@ -13,7 +22,6 @@ import { doGetPosts, doGetPostsComplete, doLogin } from '../../utils/requests'
 import { AxiosResponse } from 'axios'
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs'
 import { Context } from '../../context/appcontext'
-import { Item } from './item'
 import { RootParamList } from '../../navigation/Root'
 import { RouteProp } from '@react-navigation/native'
 import { StackNavigationProp } from '@react-navigation/stack'
@@ -23,41 +31,52 @@ import { log } from '../../utils/log'
 type Navigation = BottomTabNavigationProp<TabsParamList, 'Feed'>
 type Route = RouteProp<TabsParamList, 'Feed'>
 
-type Props = {
-  navigation: Navigation
-  route: Route
+type Props = Models.Post & {
+  // navigation: Navigation
+  // route: Route
+  userId: number
+  user: Models.User
 }
 
-const Feed = (props: Props) => {
+export const Item = (props: Props) => {
   const context = React.useContext(Context)
   const { colors } = useTheme()
 
-  React.useEffect(() => {
-    const func = () => {
-      doGetPostsComplete(context)
-    }
-    const unsub = props.navigation.addListener('focus', () => {
-      context.app?.setSelectedTab('Feed')
-    })
-    func()
-    return unsub
-  }, [])
-
   return (
-    <SafeAreaView>
-      <StatusBar />
-      <KeyboardView>
-        <ScrollView contentContainerStyle={styles.scrollViewContent}>
-          {context.posts.map((post, k) => (
-            <Item {...post} key={k} />
-          ))}
-        </ScrollView>
-      </KeyboardView>
-    </SafeAreaView>
+    <View style={styles.wrapper}>
+      <Card>
+        <Card.Title
+          title={props.user.username}
+          subtitle={new Date(props.createdAt).toLocaleString()}
+          left={({ size }) => <Avatar.Image source={{}} size={size} />}
+          right={({ size }) => (
+            <IconButton
+              color={colors.backdrop}
+              size={size}
+              icon='dots-vertical'
+              onPress={() => {}}
+            />
+          )}
+        />
+        <Card.Content>
+          <Paragraph>{props.content}</Paragraph>
+        </Card.Content>
+        <Card.Actions style={styles.actions}>
+          <IconButton
+            color={colors.backdrop}
+            icon='thumb-up-outline'
+            onPress={() => {}}
+          />
+        </Card.Actions>
+      </Card>
+    </View>
   )
 }
 
 const styles = StyleSheet.create({
+  actions: {
+    flexDirection: 'row-reverse',
+  },
   button: {
     marginBottom: 10,
   },
@@ -67,11 +86,11 @@ const styles = StyleSheet.create({
   },
   surface: {
     height: '100%',
-    backgroundColor: 'transparent',
   },
   textInput: {
     marginBottom: 10,
   },
+  wrapper: {
+    paddingBottom: 10,
+  },
 })
-
-export default Feed

@@ -14,14 +14,19 @@ import {
   MDTextInput,
   StatusBar,
 } from '@suresure/react-native-components'
-import { Requests, Responses } from '../../typescript'
+import { Models, Requests, Responses } from '../../typescript'
+import {
+  doCreatePost,
+  doGetPosts,
+  doGetPostsComplete,
+  doLogin,
+} from '../../utils/requests'
 
 import { AxiosResponse } from 'axios'
 import { Context } from '../../context/appcontext'
 import { RootParamList } from '../../navigation/Root'
 import { RouteProp } from '@react-navigation/native'
 import { StackNavigationProp } from '@react-navigation/stack'
-import { doLogin } from '../../utils/requests'
 import { log } from '../../utils/log'
 
 type Navigation = StackNavigationProp<RootParamList, 'NewPost'>
@@ -32,7 +37,7 @@ type Props = {
   route: Route
 }
 
-const Account = (props: Props) => {
+const NewPost = (props: Props) => {
   const context = React.useContext(Context)
 
   const { colors } = useTheme()
@@ -40,13 +45,15 @@ const Account = (props: Props) => {
   const [content, setContent] = React.useState<string>('')
 
   const post = () => {
-    // doLogin({ email: email, password: password }).then(({ data, status }) => {
-    //   if (status !== 200) {
-    //     alert(data.message)
-    //   } else {
-    //     alert(data.message)
-    //   }
-    // })
+    doCreatePost({ content: content }).then(({ data, status }) => {
+      if (status !== 200) {
+        alert(data.message)
+      } else {
+        doGetPostsComplete(context).then(() => {
+          props.navigation.goBack()
+        })
+      }
+    })
   }
 
   const styles = StyleSheet.create({
@@ -102,4 +109,4 @@ const Account = (props: Props) => {
   )
 }
 
-export default Account
+export default NewPost
