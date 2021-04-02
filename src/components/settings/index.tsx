@@ -1,6 +1,14 @@
 import * as React from 'react'
 
-import { Button, Headline, Surface, useTheme } from 'react-native-paper'
+import {
+  Button,
+  Checkbox,
+  Divider,
+  Headline,
+  List,
+  Surface,
+  useTheme,
+} from 'react-native-paper'
 import {
   KeyboardView,
   MDTextInput,
@@ -10,9 +18,11 @@ import { Requests, Responses } from '../../typescript'
 import { SafeAreaView, ScrollView, StyleSheet } from 'react-native'
 
 import { AxiosResponse } from 'axios'
+import { Context } from '../../context/appcontext'
 import { RootParamList } from '../../navigation/Root'
 import { RouteProp } from '@react-navigation/native'
 import { StackNavigationProp } from '@react-navigation/stack'
+import { config } from '../../config'
 import { doLogin } from '../../utils/requests'
 import { log } from '../../utils/log'
 
@@ -24,24 +34,12 @@ type Props = {
   route: LoginScreenRouteProp
 }
 
-const Login = (props: Props) => {
-  const [email, setEmail] = React.useState<string>('')
-  const [password, setPassword] = React.useState<string>('')
-
+const Settings = (props: Props) => {
+  const context = React.useContext(Context)
   const { colors } = useTheme()
 
-  const login = () => {
-    doLogin({ email: email, password: password }).then(({ data, status }) => {
-      if (status !== 200) {
-        alert(data.message)
-      } else {
-        alert(data.message)
-      }
-    })
-  }
-
-  const goToCreateAcoount = () => {
-    props.navigation.navigate('Register')
+  const toggleTheme = () => {
+    context.app?.setTheme(context.theme === 'light' ? 'dark' : 'light')
   }
 
   return (
@@ -50,28 +48,22 @@ const Login = (props: Props) => {
       <Surface style={styles.surface}>
         <ScrollView contentContainerStyle={styles.scrollViewContent}>
           <KeyboardView>
-            <MDTextInput
-              onChangeText={setEmail}
-              style={styles.textInput}
-              keyboardType='email-address'
-              value={email}
-              label='Email'
+            <Checkbox.Item
+              label='Dark Theme'
+              onPress={toggleTheme}
+              status={context.theme === 'light' ? 'unchecked' : 'checked'}
             />
-            <MDTextInput
-              onChangeText={setPassword}
-              style={styles.textInput}
-              value={password}
-              label='Password'
+            <Divider />
+            <List.Item title='Version' description={config.VERSION} />
+            <Divider />
+            <List.Item
+              title='Release Channel'
+              description={config.CHANNEL || 'Expo Go'}
             />
-            <Button mode='contained' onPress={login} style={styles.button}>
-              Login
-            </Button>
-            <Button
-              mode='text'
-              onPress={goToCreateAcoount}
-              style={styles.button}>
-              Create Account
-            </Button>
+            <Divider />
+            <List.Item title='App Version' description={config.APP_VERSION} />
+            <Divider />
+            <List.Item title='Expo Version' description={config.EXPO_VERSION} />
           </KeyboardView>
         </ScrollView>
       </Surface>
@@ -81,8 +73,8 @@ const Login = (props: Props) => {
 
 const styles = StyleSheet.create({
   scrollViewContent: {
-    paddingHorizontal: 10,
-    paddingVertical: 10,
+    // paddingHorizontal: 10,
+    // paddingVertical: 10,
   },
   textInput: {
     marginBottom: 10,
@@ -95,4 +87,4 @@ const styles = StyleSheet.create({
   },
 })
 
-export default Login
+export default Settings

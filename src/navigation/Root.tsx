@@ -23,15 +23,28 @@ export type RootParamList = {
 const resolveRouteName = (
   route: RouteProp<RootParamList, keyof RootParamList>
 ) => {
-  const _route = getFocusedRouteNameFromRoute(route) as keyof DrawerParamList
+  const _route = getFocusedRouteNameFromRoute(route) as keyof (DrawerParamList &
+    RootParamList)
+  console.log(_route)
   switch (_route) {
+    case 'Comments':
+      return 'Comments'
+    case 'Drawer':
+      return 'Home'
     case 'Friends':
       return 'Friends'
+    case 'Login':
+      return 'Login'
+    case 'Profile':
+      return 'Profile'
+    case 'Register':
+      return 'Register'
     case 'Settings':
       return 'Settings'
     case 'Tabs':
-    default:
       return 'Home'
+    default:
+      return undefined
   }
 }
 
@@ -55,7 +68,9 @@ const Root = () => {
             {headerProps.navigation.canGoBack() && (
               <Appbar.BackAction onPress={headerProps.navigation.goBack} />
             )}
-            <Appbar.Content title={resolveRouteName(props.route)} />
+            <Appbar.Content
+              title={resolveRouteName(props.route) || props.route.name}
+            />
           </Appbar>
         ),
       })}>

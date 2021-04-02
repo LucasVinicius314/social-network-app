@@ -7,6 +7,9 @@ export type Config = {
   API_URL: string
   CHANNEL: string | undefined
   LOG: Log
+  VERSION: string
+  APP_VERSION: string | undefined
+  EXPO_VERSION: string | undefined
 }
 
 export type LoginInfo = {
