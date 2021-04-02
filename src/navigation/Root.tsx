@@ -6,6 +6,7 @@ import Comments from '../components/comments'
 import { Context } from '../context/appcontext'
 import { DrawerActions } from '@react-navigation/native'
 import Login from '../components/login'
+import NewPost from '../components/newpost'
 import Profile from '../components/profile'
 import React from 'react'
 import Register from '../components/register'
@@ -18,6 +19,7 @@ export type RootParamList = {
   Comments: undefined
   Drawer: undefined
   Login: undefined
+  NewPost: undefined
   Profile: undefined
   Register: undefined
 }
@@ -34,6 +36,8 @@ const resolveRouteName = (route: keyof (DrawerParamList & RootParamList)) => {
       return 'Friends'
     case 'Login':
       return 'Login'
+    case 'NewPost':
+      return 'New Post'
     case 'Profile':
       return 'Profile'
     case 'Register':
@@ -75,7 +79,10 @@ const Root = () => {
                 title={resolveRouteName(name || props.route.name)}
               />
               {name === 'Tabs' && context.selectedTab === 'Feed' && (
-                <Appbar.Action icon='plus' onPress={() => alert('New post')} />
+                <Appbar.Action
+                  icon='plus'
+                  onPress={() => headerProps.navigation.navigate('NewPost')}
+                />
               )}
             </Appbar>
           )
@@ -87,6 +94,7 @@ const Root = () => {
           <Screen name='Comments' component={Comments} />
           <Screen name='Profile' component={Profile} />
           <Screen name='Account' component={Account} />
+          <Screen name='NewPost' component={NewPost} />
         </>
       ) : (
         <>
