@@ -17,9 +17,11 @@ export type LoginInfo = {
 export type AppContext = {
   user?: Responses.UserRegister
   logged: boolean
+  theme: 'light' | 'dark'
   app?: {
     setUser: Dispatch<SetStateAction<Responses.UserRegister | undefined>>
     setLogged: Dispatch<SetStateAction<boolean>>
+    setTheme: Dispatch<SetStateAction<'light' | 'dark'>>
   }
 }
 

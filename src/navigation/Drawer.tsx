@@ -26,7 +26,7 @@ const { Navigator, Screen } = createDrawerNavigator<DrawerParamList>()
 const Drawer = (props: Props) => {
   return (
     <Navigator>
-      <Screen name='Tabs' component={Tabs} />
+      <Screen name='Tabs' component={Tabs} options={{ drawerLabel: 'Home' }} />
       <Screen name='Friends' component={Friends} />
       <Screen name='Settings' component={Settings} />
     </Navigator>
