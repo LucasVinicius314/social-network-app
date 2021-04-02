@@ -1,5 +1,6 @@
 import { Dispatch } from 'react'
 import { SetStateAction } from 'react'
+import { TabsParamList } from '../navigation/Tabs'
 
 export type Log = 'none' | 'all'
 
@@ -21,10 +22,12 @@ export type AppContext = {
   user?: Responses.UserRegister
   logged: boolean
   theme: 'light' | 'dark'
+  selectedTab: keyof TabsParamList
   app?: {
     setUser: Dispatch<SetStateAction<Responses.UserRegister | undefined>>
     setLogged: Dispatch<SetStateAction<boolean>>
     setTheme: Dispatch<SetStateAction<'light' | 'dark'>>
+    setSelectedTab: Dispatch<SetStateAction<keyof TabsParamList>>
   }
 }
 

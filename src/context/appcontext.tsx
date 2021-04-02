@@ -4,6 +4,8 @@ import { AppContext } from '../typescript'
 
 const _context: AppContext = {
   logged: false,
+  selectedTab: 'Feed',
+  theme: 'light',
 }
 
 const context = React.createContext<AppContext>(_context)

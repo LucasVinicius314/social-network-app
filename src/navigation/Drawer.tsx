@@ -105,8 +105,8 @@ const Drawer = (props: Props) => {
             <View style={styles.mainWrapper}>
               <Avatar.Image source={{}} />
               <View style={styles.wrapper}>
-                <Title>User</Title>
-                <Caption>user@gmail.com</Caption>
+                <Title>{context.user?.username}</Title>
+                <Caption>{context.user?.email}</Caption>
               </View>
             </View>
             <View style={styles.buttonWrapper}>

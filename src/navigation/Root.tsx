@@ -72,8 +72,11 @@ const Root = () => {
                 <Appbar.BackAction onPress={headerProps.navigation.goBack} />
               )}
               <Appbar.Content
-                title={resolveRouteName(name || props.route.name) || 'Home'}
+                title={resolveRouteName(name || props.route.name)}
               />
+              {name === 'Tabs' && context.selectedTab === 'Feed' && (
+                <Appbar.Action icon='plus' onPress={() => alert('New post')} />
+              )}
             </Appbar>
           )
         },

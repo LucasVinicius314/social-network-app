@@ -7,42 +7,36 @@ import {
   StatusBar,
 } from '@suresure/react-native-components'
 import { Requests, Responses } from '../../typescript'
-import { SafeAreaView, ScrollView, StyleSheet } from 'react-native'
+import { SafeAreaView, ScrollView, StyleSheet, View } from 'react-native'
 
 import { AxiosResponse } from 'axios'
+import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs'
+import { Context } from '../../context/appcontext'
 import { RootParamList } from '../../navigation/Root'
 import { RouteProp } from '@react-navigation/native'
 import { StackNavigationProp } from '@react-navigation/stack'
+import { TabsParamList } from '../../navigation/Tabs'
 import { doLogin } from '../../utils/requests'
 import { log } from '../../utils/log'
 
-type LoginScreenNavigationProp = StackNavigationProp<RootParamList, 'Login'>
-type LoginScreenRouteProp = RouteProp<RootParamList, 'Login'>
+type Navigation = BottomTabNavigationProp<TabsParamList, 'Explore'>
+type Route = RouteProp<TabsParamList, 'Explore'>
 
 type Props = {
-  navigation: LoginScreenNavigationProp
-  route: LoginScreenRouteProp
+  navigation: Navigation
+  route: Route
 }
 
-const Feed = (props: Props) => {
-  const [email, setEmail] = React.useState<string>('')
-  const [password, setPassword] = React.useState<string>('')
-
+const Explore = (props: Props) => {
+  const context = React.useContext(Context)
   const { colors } = useTheme()
 
-  const login = () => {
-    doLogin({ email: email, password: password }).then(({ data, status }) => {
-      if (status !== 200) {
-        alert(data.message)
-      } else {
-        alert(data.message)
-      }
+  React.useEffect(() => {
+    const unsub = props.navigation.addListener('focus', () => {
+      context.app?.setSelectedTab('Explore')
     })
-  }
-
-  const goToCreateAcoount = () => {
-    props.navigation.navigate('Register')
-  }
+    return unsub
+  })
 
   return (
     <SafeAreaView>
@@ -50,28 +44,7 @@ const Feed = (props: Props) => {
       <Surface style={styles.surface}>
         <ScrollView contentContainerStyle={styles.scrollViewContent}>
           <KeyboardView>
-            <MDTextInput
-              onChangeText={setEmail}
-              style={styles.textInput}
-              keyboardType='email-address'
-              value={email}
-              label='Email'
-            />
-            <MDTextInput
-              onChangeText={setPassword}
-              style={styles.textInput}
-              value={password}
-              label='Password'
-            />
-            <Button mode='contained' onPress={login} style={styles.button}>
-              Login
-            </Button>
-            <Button
-              mode='text'
-              onPress={goToCreateAcoount}
-              style={styles.button}>
-              Create Account
-            </Button>
+            <View />
           </KeyboardView>
         </ScrollView>
       </Surface>
@@ -80,19 +53,19 @@ const Feed = (props: Props) => {
 }
 
 const styles = StyleSheet.create({
+  button: {
+    marginBottom: 10,
+  },
   scrollViewContent: {
     paddingHorizontal: 10,
     paddingVertical: 10,
   },
-  textInput: {
-    marginBottom: 10,
-  },
   surface: {
     height: '100%',
   },
-  button: {
+  textInput: {
     marginBottom: 10,
   },
 })
 
-export default Feed
+export default Explore

@@ -42,6 +42,11 @@ const Settings = (props: Props) => {
     context.app?.setTheme(context.theme === 'light' ? 'dark' : 'light')
   }
 
+  const logout = () => {
+    context.app?.setLogged(false)
+    context.app?.setUser(undefined)
+  }
+
   return (
     <SafeAreaView>
       <StatusBar />
@@ -64,6 +69,12 @@ const Settings = (props: Props) => {
             <List.Item title='App Version' description={config.APP_VERSION} />
             <Divider />
             <List.Item title='Expo Version' description={config.EXPO_VERSION} />
+            <Divider />
+            <List.Item
+              title='Log Out'
+              onPress={logout}
+              left={({ color }) => <List.Icon color={color} icon='logout' />}
+            />
           </KeyboardView>
         </ScrollView>
       </Surface>
