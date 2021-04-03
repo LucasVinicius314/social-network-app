@@ -40,7 +40,7 @@ const Friends = (props: Props) => {
   const context = React.useContext(Context)
   const { colors } = useTheme()
 
-  const goToCreateAcoount = () => {
+  const goToCreateAccount = () => {
     props.navigation.navigate('Register')
   }
 

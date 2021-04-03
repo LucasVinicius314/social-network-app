@@ -1,6 +1,7 @@
 import * as React from 'react'
 
 import { Button, Headline, Surface, useTheme } from 'react-native-paper'
+import { CompositeNavigationProp, RouteProp } from '@react-navigation/native'
 import {
   KeyboardView,
   MDTextInput,
@@ -15,15 +16,17 @@ import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs'
 import { Context } from '../../context/appcontext'
 import { Item } from './item'
 import { RootParamList } from '../../navigation/Root'
-import { RouteProp } from '@react-navigation/native'
 import { StackNavigationProp } from '@react-navigation/stack'
 import { TabsParamList } from '../../navigation/Tabs'
 import { log } from '../../utils/log'
 
-type Navigation = BottomTabNavigationProp<TabsParamList, 'Feed'>
+type Navigation = CompositeNavigationProp<
+  BottomTabNavigationProp<TabsParamList, 'Feed'>,
+  StackNavigationProp<RootParamList>
+>
 type Route = RouteProp<TabsParamList, 'Feed'>
 
-type Props = {
+export type Props = {
   navigation: Navigation
   route: Route
 }
@@ -39,6 +42,7 @@ const Feed = (props: Props) => {
     const unsub = props.navigation.addListener('focus', () => {
       context.app?.setSelectedTab('Feed')
     })
+    context.app?.setSelectedTab('Feed')
     func()
     return unsub
   }, [])
@@ -48,8 +52,8 @@ const Feed = (props: Props) => {
       <StatusBar />
       <KeyboardView>
         <ScrollView contentContainerStyle={styles.scrollViewContent}>
-          {context.posts.map((post, k) => (
-            <Item {...post} key={k} />
+          {context.posts.map((post) => (
+            <Item {...props} key={post.id} post={post} />
           ))}
         </ScrollView>
       </KeyboardView>

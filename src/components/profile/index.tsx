@@ -1,78 +1,98 @@
 import * as React from 'react'
 
-import { Button, Headline, Surface, useTheme } from 'react-native-paper'
+import {
+  ActivityIndicator,
+  Avatar,
+  Button,
+  Headline,
+  Surface,
+  Title,
+  useTheme,
+} from 'react-native-paper'
+import { Image, SafeAreaView, ScrollView, StyleSheet, View } from 'react-native'
 import {
   KeyboardView,
   MDTextInput,
   StatusBar,
 } from '@suresure/react-native-components'
-import { Requests, Responses } from '../../typescript'
-import { SafeAreaView, ScrollView, StyleSheet } from 'react-native'
+import { Models, Requests, Responses } from '../../typescript'
+import { doGetProfile, doLogin } from '../../utils/requests'
 
 import { AxiosResponse } from 'axios'
 import { RootParamList } from '../../navigation/Root'
 import { RouteProp } from '@react-navigation/native'
 import { StackNavigationProp } from '@react-navigation/stack'
-import { doLogin } from '../../utils/requests'
 import { log } from '../../utils/log'
 
-type LoginScreenNavigationProp = StackNavigationProp<RootParamList, 'Login'>
-type LoginScreenRouteProp = RouteProp<RootParamList, 'Login'>
+type Navigation = StackNavigationProp<RootParamList, 'Profile'>
+type Route = RouteProp<RootParamList, 'Profile'>
 
 type Props = {
-  navigation: LoginScreenNavigationProp
-  route: LoginScreenRouteProp
+  navigation: Navigation
+  route: Route
 }
 
-const Login = (props: Props) => {
-  const [email, setEmail] = React.useState<string>('')
-  const [password, setPassword] = React.useState<string>('')
-
+const Profile = (props: Props) => {
   const { colors } = useTheme()
 
-  const login = () => {
-    doLogin({ email: email, password: password }).then(({ data, status }) => {
-      if (status !== 200) {
-        alert(data.message)
-      } else {
-        alert(data.message)
-      }
-    })
-  }
+  const [loaded, setLoaded] = React.useState<boolean>(false)
+  const [user, setUser] = React.useState<Models.User | undefined>(undefined)
 
-  const goToCreateAcoount = () => {
-    props.navigation.navigate('Register')
-  }
+  React.useEffect(() => {
+    const func = () => {
+      doGetProfile({ id: props.route.params.id })
+        .then(({ data, status }) => {
+          if (status !== 200) {
+            data = data as Responses.Base
+            alert(data.message)
+          } else {
+            data = data as Models.User
+            setUser(data)
+          }
+        })
+        .finally(() => setLoaded(true))
+    }
+    func()
+  }, [])
+
+  const styles = StyleSheet.create({
+    avatar: {
+      marginBottom: 20,
+    },
+    background: {
+      backgroundColor: colors.disabled,
+      height: 100,
+    },
+    button: {
+      marginBottom: 10,
+    },
+    mainCol: {
+      paddingHorizontal: 10,
+    },
+    surface: {
+      height: '100%',
+    },
+    textInput: {
+      marginBottom: 10,
+    },
+    wrapper: {
+      position: 'relative',
+      top: -45,
+    },
+  })
 
   return (
     <SafeAreaView>
       <StatusBar />
       <Surface style={styles.surface}>
-        <ScrollView contentContainerStyle={styles.scrollViewContent}>
-          <KeyboardView>
-            <MDTextInput
-              onChangeText={setEmail}
-              style={styles.textInput}
-              keyboardType='email-address'
-              value={email}
-              label='Email'
-            />
-            <MDTextInput
-              onChangeText={setPassword}
-              style={styles.textInput}
-              value={password}
-              label='Password'
-            />
-            <Button mode='contained' onPress={login} style={styles.button}>
-              Login
-            </Button>
-            <Button
-              mode='text'
-              onPress={goToCreateAcoount}
-              style={styles.button}>
-              Create Account
-            </Button>
-          </KeyboardView>
+        <ScrollView>
+          <Image style={styles.background} source={{}} />
+          <Surface style={styles.mainCol}>
+            <View style={styles.wrapper}>
+              <Avatar.Image source={{}} size={90} style={styles.avatar} />
+              {loaded ? <Title>{'sa'}</Title> : <ActivityIndicator />}
+            </View>
+          </Surface>
         </ScrollView>
       </Surface>
     </SafeAreaView>
@@ -95,4 +115,4 @@ const styles = StyleSheet.create({
   },
 })
 
-export default Login
+export default Profile

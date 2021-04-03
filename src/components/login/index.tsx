@@ -44,7 +44,7 @@ const Login = (props: Props) => {
     })
   }
 
-  const goToCreateAcoount = () => {
+  const goToCreateAccount = () => {
     props.navigation.navigate('Register')
   }
 
@@ -72,7 +72,7 @@ const Login = (props: Props) => {
             </Button>
             <Button
               mode='text'
-              onPress={goToCreateAcoount}
+              onPress={goToCreateAccount}
               style={styles.button}>
               Create Account
             </Button>

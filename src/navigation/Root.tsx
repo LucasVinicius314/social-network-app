@@ -20,7 +20,7 @@ export type RootParamList = {
   Drawer: undefined
   Login: undefined
   NewPost: undefined
-  Profile: undefined
+  Profile: { id: number; name: string }
   Register: undefined
 }
 
@@ -76,14 +76,19 @@ const Root = () => {
                 <Appbar.BackAction onPress={headerProps.navigation.goBack} />
               )}
               <Appbar.Content
-                title={resolveRouteName(name || props.route.name)}
+                title={
+                  props.route.params?.name ||
+                  resolveRouteName(name || props.route.name)
+                }
               />
-              {name === 'Tabs' && context.selectedTab === 'Feed' && (
-                <Appbar.Action
-                  icon='plus'
-                  onPress={() => headerProps.navigation.navigate('NewPost')}
-                />
-              )}
+              {(name === 'Tabs' || name === undefined) &&
+                props.route.name === 'Drawer' &&
+                context.selectedTab === 'Feed' && (
+                  <Appbar.Action
+                    icon='plus'
+                    onPress={() => headerProps.navigation.navigate('NewPost')}
+                  />
+                )}
             </Appbar>
           )
         },

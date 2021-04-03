@@ -4,37 +4,41 @@ import { Context } from '../context/appcontext'
 import React from 'react'
 import { instance as axios } from '../services/axios'
 
-export const doLogin = (loginParams: Requests.Login) => {
+export const doLogin = (params: Requests.Login) => {
   return axios.post<Responses.Base & Responses.UserRegister>(
     '/user/login',
-    loginParams
+    params
   )
 }
 
-export const doRegister = (registerParams: Requests.Register) => {
+export const doRegister = (params: Requests.Register) => {
   return axios.post<Responses.Base & Responses.UserRegister>(
     '/user/register',
-    registerParams
+    params
   )
 }
 
-export const doCreatePost = (createPostParams: Requests.CreatePost) => {
-  return axios.post<Responses.Base>('/post/create', createPostParams)
+export const doCreatePost = (params: Requests.CreatePost) => {
+  return axios.post<Responses.Base>('/post/create', params)
 }
 
 export const doGetPosts = () => {
   return axios.post<Responses.Base | Models.Post[]>('/post/all')
 }
 
+export const doGetProfile = (params: Requests.Profile) => {
+  return axios.post<Responses.Base | Models.User>('/user/profile', params)
+}
+
 export const doGetPostsComplete = (context: AppContext) => {
   return axios
-    .post<Responses.Base | Models.Post[]>('/post/all')
+    .post<Responses.Base | Models.UserPost[]>('/post/all')
     .then(({ data, status }) => {
       if (status !== 200) {
         data = data as Responses.Base
         alert(data.message)
       } else {
-        data = data as Models.Post[]
+        data = data as Models.UserPost[]
         context.app?.setPosts(data)
       }
     })

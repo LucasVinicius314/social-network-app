@@ -28,11 +28,9 @@ export type AppContext = {
     setLogged: Dispatch<SetStateAction<boolean>>
     setTheme: Dispatch<SetStateAction<'light' | 'dark'>>
     setSelectedTab: Dispatch<SetStateAction<keyof TabsParamList>>
-    setPosts: Dispatch<
-      SetStateAction<(Models.Post & { user: Models.User; userId: number })[]>
-    >
+    setPosts: Dispatch<SetStateAction<Models.UserPost[]>>
   }
-  posts: (Models.Post & { user: Models.User; userId: number })[]
+  posts: Models.UserPost[]
 }
 
 export namespace Requests {
@@ -47,6 +45,9 @@ export namespace Requests {
   }
   export type CreatePost = {
     content: string
+  }
+  export type Profile = {
+    id: number
   }
 }
 
@@ -75,8 +76,10 @@ export namespace Models {
     createdAt: string
     email: string
     id: number
-    password: string
     updatedAt: string
     username: string
+  }
+  export type UserPost = Post & {
+    user: User
   }
 }

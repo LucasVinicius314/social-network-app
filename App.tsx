@@ -24,9 +24,7 @@ const App = () => {
   const [user, setUser] = React.useState<Responses.UserRegister | undefined>(
     undefined
   )
-  const [posts, setPosts] = React.useState<
-    (Models.Post & { user: Models.User; userId: number })[]
-  >([])
+  const [posts, setPosts] = React.useState<Models.UserPost[]>([])
 
   return (
     <Context.Provider
