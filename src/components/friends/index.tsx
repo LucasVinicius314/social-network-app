@@ -15,11 +15,7 @@ import {
   useTheme,
 } from 'react-native-paper'
 import { CompositeNavigationProp, RouteProp } from '@react-navigation/native'
-import {
-  KeyboardView,
-  MDTextInput,
-  StatusBar,
-} from '@suresure/react-native-components'
+import { KeyboardView, MDTextInput } from '@suresure/react-native-components'
 import { Models, Requests, Responses } from '../../typescript'
 import {
   RefreshControl,
@@ -46,6 +42,7 @@ import { DrawerParamList } from '../../navigation/Drawer'
 import Friend from './friend'
 import { RootParamList } from '../../navigation/Root'
 import { StackNavigationProp } from '@react-navigation/stack'
+import { StatusBar } from '../StatusBar'
 import { log } from '../../utils/log'
 
 type Navigation = CompositeNavigationProp<

@@ -47,19 +47,6 @@ const resolveDescriptor = (descriptorMap: DrawerDescriptorMap, key: string) => {
   return descriptor as DrawerDescriptor
 }
 
-const resolveIcon = (name: keyof DrawerParamList) => {
-  switch (name) {
-    case 'Friends':
-      return <List.Icon icon='account-multiple' />
-    case 'Settings':
-      return <List.Icon icon='cog' />
-    case 'Tabs':
-      return <List.Icon icon='home' />
-    default:
-      return <List.Icon icon='help' />
-  }
-}
-
 const { Navigator, Screen } = createDrawerNavigator<DrawerParamList>()
 
 const Drawer = (props: Props) => {
@@ -95,6 +82,20 @@ const Drawer = (props: Props) => {
       paddingTop: 5,
     },
   })
+
+  const resolveIcon = (name: keyof DrawerParamList) => {
+    const color = context.theme === 'light' ? colors.backdrop : colors.disabled
+    switch (name) {
+      case 'Friends':
+        return <List.Icon icon='account-multiple' color={color} />
+      case 'Settings':
+        return <List.Icon icon='cog' color={color} />
+      case 'Tabs':
+        return <List.Icon icon='home' color={color} />
+      default:
+        return <List.Icon icon='help' color={color} />
+    }
+  }
 
   return (
     <Navigator

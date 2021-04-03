@@ -1,14 +1,15 @@
 import * as React from 'react'
 
 import { Button, Surface, useTheme } from 'react-native-paper'
-import { MDTextInput, StatusBar } from '@suresure/react-native-components'
 import { SafeAreaView, ScrollView, StyleSheet, TextInput } from 'react-native'
 
 import { Context } from '../../context/appcontext'
 import { LogoText } from '../LogoText'
+import { MDTextInput } from '@suresure/react-native-components'
 import { RootParamList } from '../../navigation/Root'
 import { RouteProp } from '@react-navigation/native'
 import { StackNavigationProp } from '@react-navigation/stack'
+import { StatusBar } from '../StatusBar'
 import { doRegister } from '../../utils/requests'
 
 type Navigation = StackNavigationProp<RootParamList, 'Register'>

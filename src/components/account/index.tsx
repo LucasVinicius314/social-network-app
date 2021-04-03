@@ -9,11 +9,7 @@ import {
   useTheme,
 } from 'react-native-paper'
 import { Image, SafeAreaView, ScrollView, StyleSheet, View } from 'react-native'
-import {
-  KeyboardView,
-  MDTextInput,
-  StatusBar,
-} from '@suresure/react-native-components'
+import { KeyboardView, MDTextInput } from '@suresure/react-native-components'
 import { Requests, Responses } from '../../typescript'
 
 import { AxiosResponse } from 'axios'
@@ -21,6 +17,7 @@ import { Context } from '../../context/appcontext'
 import { RootParamList } from '../../navigation/Root'
 import { RouteProp } from '@react-navigation/native'
 import { StackNavigationProp } from '@react-navigation/stack'
+import { StatusBar } from '../StatusBar'
 import { doLogin } from '../../utils/requests'
 import { log } from '../../utils/log'
 

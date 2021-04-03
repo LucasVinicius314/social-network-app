@@ -67,7 +67,7 @@ const Root = () => {
             props.route
           ) as keyof (DrawerParamList & RootParamList)
           return (
-            <Appbar theme={useTheme()}>
+            <Appbar.Header theme={useTheme()}>
               {props.route.name === 'Drawer' && (
                 <Appbar.Action
                   icon='menu'
@@ -93,7 +93,7 @@ const Root = () => {
                     onPress={() => headerProps.navigation.navigate('NewPost')}
                   />
                 )}
-            </Appbar>
+            </Appbar.Header>
           )
         },
       })}>

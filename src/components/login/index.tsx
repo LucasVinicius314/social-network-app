@@ -1,14 +1,16 @@
 import * as React from 'react'
 
 import { Button, Surface, useTheme } from 'react-native-paper'
-import { MDTextInput, StatusBar } from '@suresure/react-native-components'
 import { SafeAreaView, ScrollView, StyleSheet, TextInput } from 'react-native'
 
 import { Context } from '../../context/appcontext'
+import { LoadingIndicator } from '../LoadingIndicator'
 import { LogoText } from '../LogoText'
+import { MDTextInput } from '@suresure/react-native-components'
 import { RootParamList } from '../../navigation/Root'
 import { RouteProp } from '@react-navigation/native'
 import { StackNavigationProp } from '@react-navigation/stack'
+import { StatusBar } from '../StatusBar'
 import { doLogin } from '../../utils/requests'
 
 type Navigation = StackNavigationProp<RootParamList, 'Login'>
@@ -21,6 +23,7 @@ type Props = {
 
 const Login = (props: Props) => {
   const [email, setEmail] = React.useState<string>('')
+  const [loaded, setLoaded] = React.useState<boolean>(true)
   const [password, setPassword] = React.useState<string>('')
 
   const { colors } = useTheme()
@@ -31,14 +34,17 @@ const Login = (props: Props) => {
   const passwordRef = React.useRef<TextInput>(null)
 
   const login = () => {
-    doLogin({ email: email, password: password }).then(({ data, status }) => {
-      if (status === 200) {
-        context.app?.setUser(data)
-        context.app?.setLogged(true)
-      } else {
-        alert(data.message)
-      }
-    })
+    setLoaded(false)
+    doLogin({ email: email, password: password })
+      .then(({ data, status }) => {
+        if (status === 200) {
+          context.app?.setUser(data)
+          context.app?.setLogged(true)
+        } else {
+          alert(data.message)
+        }
+      })
+      .finally(() => setLoaded(true))
   }
 
   const goToCreateAccount = () => {
@@ -83,6 +89,7 @@ const Login = (props: Props) => {
             Create Account
           </Button>
         </ScrollView>
+        <LoadingIndicator visible={!loaded} />
       </Surface>
     </SafeAreaView>
   )
