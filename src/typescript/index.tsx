@@ -58,6 +58,9 @@ export namespace Requests {
   export type RejectFriendRequest = {
     id: number
   }
+  export type AcceptFriendRequest = {
+    id: number
+  }
 }
 
 export namespace Responses {
@@ -95,6 +98,12 @@ export namespace Models {
     requesteeUser: User
     requesterId: number
     requesterUser: User
+    updatedAt: string
+  }
+  export type Friend = {
+    createdAt: string
+    id: number
+    user: User
     updatedAt: string
   }
   export type UserPost = Post & {

@@ -3,6 +3,7 @@ import * as React from 'react'
 import {
   Avatar,
   Button,
+  Caption,
   Divider,
   Headline,
   IconButton,
@@ -27,7 +28,9 @@ import {
 } from 'react-native'
 import { SceneMap, TabBar, TabView } from 'react-native-tab-view'
 import {
+  doAcceptRequest,
   doCancelRequest,
+  doGetFriends,
   doGetPending,
   doGetSent,
   doRejectRequest,
@@ -60,15 +63,18 @@ const Friends = (props: Props) => {
   const [snackbar, setSnackbar] = React.useState<string>('')
   const [sent, setSent] = React.useState<Models.FriendRequest[]>([])
   const [pending, setPending] = React.useState<Models.FriendRequest[]>([])
+  const [friends, setFriends] = React.useState<Models.Friend[]>([])
 
   React.useEffect(() => {
     const func = () => {
       getPending()
       getSent()
+      getFriends()
     }
     const unsub = props.navigation.addListener('focus', ({}) => {
       getPending()
       getSent()
+      getFriends()
     })
     func()
     return unsub
@@ -100,6 +106,20 @@ const Friends = (props: Props) => {
       .finally(() => setRefreshing(false))
   }
 
+  const getFriends = () => {
+    doGetFriends()
+      .then(({ data, status }) => {
+        if (status !== 200) {
+          data = data as Responses.Base
+          setSnackbar(data.message)
+        } else {
+          data = data as Models.Friend[]
+          setFriends(data)
+        }
+      })
+      .finally(() => setRefreshing(false))
+  }
+
   const cancel = (id: number) => {
     doCancelRequest({ id })
       .then(({ data, status }) => {
@@ -116,14 +136,27 @@ const Friends = (props: Props) => {
       .finally(getPending)
   }
 
+  const accept = (id: number) => {
+    doAcceptRequest({ id })
+      .then(({ data, status }) => {
+        setSnackbar(data.message)
+      })
+      .finally(getPending)
+  }
+
   const refresh = () => {
     setRefreshing(true)
-    getSent()
     getPending()
+    getSent()
+    getFriends()
   }
 
   const dismissSnackbar = () => {
     setSnackbar('')
+  }
+
+  const goToChat = () => {
+    props.navigation.navigate('Chat')
   }
 
   const [index, setIndex] = React.useState<number>(0)
@@ -134,7 +167,52 @@ const Friends = (props: Props) => {
   ])
 
   const FriendsList = () => {
-    return <View style={{ flex: 1 }}></View>
+    return (
+      <View style={{ flex: 1 }}>
+        <ScrollView
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={refresh} />
+          }>
+          {friends.length === 0 && (
+            <View style={styles.view}>
+              <Caption>The friends list is empty</Caption>
+            </View>
+          )}
+          {friends.map((friend) => (
+            <React.Fragment key={friend.id}>
+              <List.Item
+                title={friend.user.username}
+                description='Friend'
+                left={() => <Avatar.Image size={50} source={{}} />}
+                right={() => (
+                  <>
+                    <IconButton
+                      icon='message-text'
+                      onPress={() => goToChat()}
+                      color={
+                        context.theme === 'light'
+                          ? colors.backdrop
+                          : colors.disabled
+                      }
+                    />
+                    <IconButton
+                      icon='dots-vertical'
+                      onPress={() => {}}
+                      color={
+                        context.theme === 'light'
+                          ? colors.backdrop
+                          : colors.disabled
+                      }
+                    />
+                  </>
+                )}
+              />
+              <Divider inset />
+            </React.Fragment>
+          ))}
+        </ScrollView>
+      </View>
+    )
   }
 
   const PendingList = () => {
@@ -144,6 +222,11 @@ const Friends = (props: Props) => {
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={refresh} />
           }>
+          {pending.length === 0 && (
+            <View style={styles.view}>
+              <Caption>There are no pending requests</Caption>
+            </View>
+          )}
           {pending.map((request) => (
             <React.Fragment key={request.id}>
               <List.Item
@@ -154,6 +237,7 @@ const Friends = (props: Props) => {
                   <>
                     <IconButton
                       icon='check'
+                      onPress={() => accept(request.id)}
                       color={
                         context.theme === 'light'
                           ? colors.backdrop
@@ -187,6 +271,11 @@ const Friends = (props: Props) => {
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={refresh} />
           }>
+          {sent.length === 0 && (
+            <View style={styles.view}>
+              <Caption>There are no sent requests</Caption>
+            </View>
+          )}
           {sent.map((request) => (
             <React.Fragment key={request.id}>
               <List.Item
@@ -257,20 +346,19 @@ const Friends = (props: Props) => {
 }
 
 const styles = StyleSheet.create({
-  scrollViewContent: {
-    // paddingHorizontal: 10,
-    // paddingVertical: 10,
-    height: 400,
-  },
-  textInput: {
+  button: {
     marginBottom: 10,
   },
   surface: {
     height: '100%',
     width: '100%',
   },
-  button: {
+  textInput: {
     marginBottom: 10,
+  },
+  view: {
+    alignItems: 'center',
+    paddingVertical: 90,
   },
 })
 

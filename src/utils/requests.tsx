@@ -45,12 +45,20 @@ export const doGetSent = () => {
   )
 }
 
+export const doGetFriends = () => {
+  return axios.post<Responses.Base | Models.Friend[]>('/friend/all')
+}
+
 export const doCancelRequest = (params: Requests.CancelFriendRequest) => {
   return axios.post<Responses.Base>('/friendrequest/cancel', params)
 }
 
 export const doRejectRequest = (params: Requests.RejectFriendRequest) => {
   return axios.post<Responses.Base>('/friendrequest/reject', params)
+}
+
+export const doAcceptRequest = (params: Requests.AcceptFriendRequest) => {
+  return axios.post<Responses.Base>('/friendrequest/accept', params)
 }
 
 export const doGetPostsComplete = (context: AppContext) => {
