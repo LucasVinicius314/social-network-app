@@ -14,7 +14,7 @@
     "@react-navigation/drawer": "^5.12.4",
     "@react-navigation/native": "^5.9.3",
     "@react-navigation/stack": "^5.14.3",
-    "@suresure/react-native-components": "^1.0.9",
+    "@suresure/react-native-components": "^1.0.10",
     "axios": "^0.21.1",
     "expo": "~40.0.0",
     "expo-constants": "~9.3.3",
@@ -28,6 +28,7 @@
     "react-native-reanimated": "~1.13.0",
     "react-native-safe-area-context": "3.1.9",
     "react-native-screens": "~2.15.2",
+    "react-native-svg": "12.1.0",
     "react-native-tab-view": "^3.0.0",
     "react-native-web": "~0.13.12"
   },

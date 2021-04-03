@@ -1,21 +1,15 @@
 import * as React from 'react'
 
-import { Button, Headline, Surface, useTheme } from 'react-native-paper'
-import {
-  KeyboardView,
-  MDTextInput,
-  StatusBar,
-} from '@suresure/react-native-components'
-import { Requests, Responses } from '../../typescript'
-import { SafeAreaView, ScrollView, StyleSheet } from 'react-native'
+import { Button, Surface, useTheme } from 'react-native-paper'
+import { MDTextInput, StatusBar } from '@suresure/react-native-components'
+import { SafeAreaView, ScrollView, StyleSheet, TextInput } from 'react-native'
 
-import { AxiosResponse } from 'axios'
 import { Context } from '../../context/appcontext'
+import { LogoText } from '../LogoText'
 import { RootParamList } from '../../navigation/Root'
 import { RouteProp } from '@react-navigation/native'
 import { StackNavigationProp } from '@react-navigation/stack'
 import { doLogin } from '../../utils/requests'
-import { log } from '../../utils/log'
 
 type Navigation = StackNavigationProp<RootParamList, 'Login'>
 type Route = RouteProp<RootParamList, 'Login'>
@@ -32,6 +26,9 @@ const Login = (props: Props) => {
   const { colors } = useTheme()
 
   const context = React.useContext(Context)
+
+  const emailRef = React.useRef<TextInput>(null)
+  const passwordRef = React.useRef<TextInput>(null)
 
   const login = () => {
     doLogin({ email: email, password: password }).then(({ data, status }) => {
@@ -53,30 +50,38 @@ const Login = (props: Props) => {
       <StatusBar />
       <Surface style={styles.surface}>
         <ScrollView contentContainerStyle={styles.scrollViewContent}>
-          <KeyboardView>
-            <MDTextInput
-              onChangeText={setEmail}
-              style={styles.textInput}
-              keyboardType='email-address'
-              value={email}
-              label='Email'
-            />
-            <MDTextInput
-              onChangeText={setPassword}
-              style={styles.textInput}
-              value={password}
-              label='Password'
-            />
-            <Button mode='contained' onPress={login} style={styles.button}>
-              Login
-            </Button>
-            <Button
-              mode='text'
-              onPress={goToCreateAccount}
-              style={styles.button}>
-              Create Account
-            </Button>
-          </KeyboardView>
+          <LogoText
+            width={200}
+            height={200}
+            iconStroke={colors.primary}
+            textFill={colors.text}
+            style={{ alignSelf: 'center' }}
+          />
+          <MDTextInput
+            onChangeText={setEmail}
+            style={styles.textInput}
+            keyboardType='email-address'
+            value={email}
+            label='Email'
+            ref={emailRef}
+            onSubmitEditing={() => passwordRef.current?.focus()}
+            blurOnSubmit={false}
+            returnKeyType='next'
+          />
+          <MDTextInput
+            onChangeText={setPassword}
+            style={styles.textInput}
+            value={password}
+            label='Password'
+            ref={passwordRef}
+            onSubmitEditing={login}
+          />
+          <Button mode='contained' onPress={login} style={styles.button}>
+            Login
+          </Button>
+          <Button mode='text' onPress={goToCreateAccount} style={styles.button}>
+            Create Account
+          </Button>
         </ScrollView>
       </Surface>
     </SafeAreaView>
@@ -84,17 +89,17 @@ const Login = (props: Props) => {
 }
 
 const styles = StyleSheet.create({
+  button: {
+    marginBottom: 10,
+  },
   scrollViewContent: {
     paddingHorizontal: 10,
     paddingVertical: 10,
   },
-  textInput: {
-    marginBottom: 10,
-  },
   surface: {
     height: '100%',
   },
-  button: {
+  textInput: {
     marginBottom: 10,
   },
 })

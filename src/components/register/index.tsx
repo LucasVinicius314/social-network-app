@@ -1,21 +1,18 @@
 import * as React from 'react'
 
-import { Button, Headline, Surface, useTheme } from 'react-native-paper'
-import {
-  KeyboardView,
-  MDTextInput,
-  StatusBar,
-} from '@suresure/react-native-components'
-import { SafeAreaView, ScrollView, StyleSheet } from 'react-native'
+import { Button, Surface, useTheme } from 'react-native-paper'
+import { MDTextInput, StatusBar } from '@suresure/react-native-components'
+import { SafeAreaView, ScrollView, StyleSheet, TextInput } from 'react-native'
 
 import { Context } from '../../context/appcontext'
+import { LogoText } from '../LogoText'
 import { RootParamList } from '../../navigation/Root'
 import { RouteProp } from '@react-navigation/native'
 import { StackNavigationProp } from '@react-navigation/stack'
 import { doRegister } from '../../utils/requests'
 
-type Navigation = StackNavigationProp<RootParamList, 'Login'>
-type Route = RouteProp<RootParamList, 'Login'>
+type Navigation = StackNavigationProp<RootParamList, 'Register'>
+type Route = RouteProp<RootParamList, 'Register'>
 
 type Props = {
   navigation: Navigation
@@ -30,6 +27,10 @@ const Register = (props: Props) => {
   const { colors } = useTheme()
 
   const context = React.useContext(Context)
+
+  const usernameRef = React.useRef<TextInput>(null)
+  const emailRef = React.useRef<TextInput>(null)
+  const passwordRef = React.useRef<TextInput>(null)
 
   const register = () => {
     doRegister({ email: email, password: password, username: username }).then(
@@ -49,30 +50,45 @@ const Register = (props: Props) => {
       <StatusBar />
       <Surface style={styles.surface}>
         <ScrollView contentContainerStyle={styles.scrollViewContent}>
-          <KeyboardView>
-            <MDTextInput
-              onChangeText={setUsername}
-              style={styles.textInput}
-              value={username}
-              label='Username'
-            />
-            <MDTextInput
-              onChangeText={setEmail}
-              style={styles.textInput}
-              keyboardType='email-address'
-              value={email}
-              label='Email'
-            />
-            <MDTextInput
-              onChangeText={setPassword}
-              style={styles.textInput}
-              value={password}
-              label='Password'
-            />
-            <Button mode='contained' onPress={register}>
-              Create Account
-            </Button>
-          </KeyboardView>
+          <LogoText
+            width={200}
+            height={200}
+            iconStroke={colors.primary}
+            textFill={colors.text}
+            style={{ alignSelf: 'center' }}
+          />
+          <MDTextInput
+            onChangeText={setUsername}
+            style={styles.textInput}
+            value={username}
+            label='Username'
+            ref={usernameRef}
+            onSubmitEditing={() => emailRef.current?.focus()}
+            blurOnSubmit={false}
+            returnKeyType='next'
+          />
+          <MDTextInput
+            onChangeText={setEmail}
+            style={styles.textInput}
+            keyboardType='email-address'
+            value={email}
+            label='Email'
+            ref={emailRef}
+            onSubmitEditing={() => passwordRef.current?.focus()}
+            blurOnSubmit={false}
+            returnKeyType='next'
+          />
+          <MDTextInput
+            onChangeText={setPassword}
+            style={styles.textInput}
+            value={password}
+            label='Password'
+            ref={passwordRef}
+            onSubmitEditing={register}
+          />
+          <Button mode='contained' onPress={register}>
+            Create Account
+          </Button>
         </ScrollView>
       </Surface>
     </SafeAreaView>

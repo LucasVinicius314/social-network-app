@@ -61,6 +61,9 @@ export namespace Requests {
   export type AcceptFriendRequest = {
     id: number
   }
+  export type RemoveFriend = {
+    id: number
+  }
 }
 
 export namespace Responses {

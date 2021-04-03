@@ -61,6 +61,10 @@ export const doAcceptRequest = (params: Requests.AcceptFriendRequest) => {
   return axios.post<Responses.Base>('/friendrequest/accept', params)
 }
 
+export const doRemoveFriend = (params: Requests.RemoveFriend) => {
+  return axios.post<Responses.Base>('/friend/remove', params)
+}
+
 export const doGetPostsComplete = (context: AppContext) => {
   return axios
     .post<Responses.Base | Models.UserPost[]>('/post/all')

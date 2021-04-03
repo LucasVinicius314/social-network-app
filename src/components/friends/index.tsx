@@ -1,6 +1,7 @@
 import * as React from 'react'
 
 import {
+  ActivityIndicator,
   Avatar,
   Button,
   Caption,
@@ -35,12 +36,14 @@ import {
   doGetPending,
   doGetSent,
   doRejectRequest,
+  doRemoveFriend,
 } from '../../utils/requests'
 
 import { AxiosResponse } from 'axios'
 import { Context } from '../../context/appcontext'
 import { DrawerNavigationProp } from '@react-navigation/drawer'
 import { DrawerParamList } from '../../navigation/Drawer'
+import Friend from './friend'
 import { RootParamList } from '../../navigation/Root'
 import { StackNavigationProp } from '@react-navigation/stack'
 import { log } from '../../utils/log'
@@ -61,28 +64,31 @@ const Friends = (props: Props) => {
   const { colors } = useTheme()
 
   const [refreshing, setRefreshing] = React.useState<boolean>(false)
+  const [loaded, setLoaded] = React.useState<boolean>(false)
   const [snackbar, setSnackbar] = React.useState<string>('')
   const [sent, setSent] = React.useState<Models.FriendRequest[]>([])
   const [pending, setPending] = React.useState<Models.FriendRequest[]>([])
   const [friends, setFriends] = React.useState<Models.Friend[]>([])
 
   React.useEffect(() => {
-    const func = () => {
-      getPending()
-      getSent()
-      getFriends()
-    }
     const unsub = props.navigation.addListener('focus', ({}) => {
-      getPending()
-      getSent()
-      getFriends()
+      getAll()
     })
-    func()
+    getAll()
     return unsub
   }, [])
 
-  const getPending = () => {
-    doGetPending().then(({ data, status }) => {
+  const getAll = async () => {
+    return await Promise.all([getPending(), getSent(), getFriends()]).finally(
+      () => {
+        setLoaded(true)
+        setRefreshing(false)
+      }
+    )
+  }
+
+  const getPending = async () => {
+    return await doGetPending().then(({ data, status }) => {
       if (status !== 200) {
         data = data as Responses.Base
         setSnackbar(data.message)
@@ -93,8 +99,8 @@ const Friends = (props: Props) => {
     })
   }
 
-  const getSent = () => {
-    doGetSent()
+  const getSent = async () => {
+    return await doGetSent()
       .then(({ data, status }) => {
         if (status !== 200) {
           data = data as Responses.Base
@@ -107,8 +113,8 @@ const Friends = (props: Props) => {
       .finally(() => setRefreshing(false))
   }
 
-  const getFriends = () => {
-    doGetFriends()
+  const getFriends = async () => {
+    return await doGetFriends()
       .then(({ data, status }) => {
         if (status !== 200) {
           data = data as Responses.Base
@@ -126,7 +132,15 @@ const Friends = (props: Props) => {
       .then(({ data, status }) => {
         setSnackbar(data.message)
       })
-      .finally(getSent)
+      .finally(getAll)
+  }
+
+  const remove = (id: number) => {
+    doRemoveFriend({ id })
+      .then(({ data, status }) => {
+        setSnackbar(data.message)
+      })
+      .finally(getAll)
   }
 
   const reject = (id: number) => {
@@ -134,7 +148,7 @@ const Friends = (props: Props) => {
       .then(({ data, status }) => {
         setSnackbar(data.message)
       })
-      .finally(getPending)
+      .finally(getAll)
   }
 
   const accept = (id: number) => {
@@ -142,14 +156,12 @@ const Friends = (props: Props) => {
       .then(({ data, status }) => {
         setSnackbar(data.message)
       })
-      .finally(getPending)
+      .finally(getAll)
   }
 
   const refresh = () => {
     setRefreshing(true)
-    getPending()
-    getSent()
-    getFriends()
+    getAll()
   }
 
   const dismissSnackbar = () => {
@@ -178,58 +190,28 @@ const Friends = (props: Props) => {
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={refresh} />
           }>
-          {friends.length === 0 && (
+          {loaded ? (
+            <>
+              {friends.length === 0 && (
+                <View style={styles.view}>
+                  <Caption>The friends list is empty</Caption>
+                </View>
+              )}
+              {friends.map((friend) => (
+                <Friend
+                  key={friend.id}
+                  friend={friend}
+                  remove={remove}
+                  goToChat={goToChat}
+                  goToProfile={goToProfile}
+                />
+              ))}
+            </>
+          ) : (
             <View style={styles.view}>
-              <Caption>The friends list is empty</Caption>
+              <ActivityIndicator />
             </View>
           )}
-          {friends.map((friend) => (
-            <React.Fragment key={friend.id}>
-              <List.Item
-                title={friend.user.username}
-                description='Friend'
-                left={() => (
-                  <View
-                    style={{
-                      borderRadius: 50,
-                      height: 50,
-                      overflow: 'hidden',
-                      width: 50,
-                    }}>
-                    <TouchableRipple
-                      onPress={() =>
-                        goToProfile(friend.user.id, friend.user.username)
-                      }>
-                      <Avatar.Image size={50} source={{}} />
-                    </TouchableRipple>
-                  </View>
-                )}
-                right={() => (
-                  <>
-                    <IconButton
-                      icon='message-text'
-                      onPress={() => goToChat()}
-                      color={
-                        context.theme === 'light'
-                          ? colors.backdrop
-                          : colors.disabled
-                      }
-                    />
-                    <IconButton
-                      icon='dots-vertical'
-                      onPress={() => {}}
-                      color={
-                        context.theme === 'light'
-                          ? colors.backdrop
-                          : colors.disabled
-                      }
-                    />
-                  </>
-                )}
-              />
-              <Divider inset />
-            </React.Fragment>
-          ))}
         </ScrollView>
       </View>
     )
@@ -242,43 +224,51 @@ const Friends = (props: Props) => {
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={refresh} />
           }>
-          {pending.length === 0 && (
+          {loaded ? (
+            <>
+              {pending.length === 0 && (
+                <View style={styles.view}>
+                  <Caption>There are no pending requests</Caption>
+                </View>
+              )}
+              {pending.map((request) => (
+                <React.Fragment key={request.id}>
+                  <List.Item
+                    title={request.requesterUser.username}
+                    description='Incoming friend request'
+                    left={() => <Avatar.Image size={50} source={{}} />}
+                    right={() => (
+                      <>
+                        <IconButton
+                          icon='check'
+                          onPress={() => accept(request.id)}
+                          color={
+                            context.theme === 'light'
+                              ? colors.backdrop
+                              : colors.disabled
+                          }
+                        />
+                        <IconButton
+                          icon='close'
+                          onPress={() => reject(request.id)}
+                          color={
+                            context.theme === 'light'
+                              ? colors.backdrop
+                              : colors.disabled
+                          }
+                        />
+                      </>
+                    )}
+                  />
+                  <Divider inset />
+                </React.Fragment>
+              ))}
+            </>
+          ) : (
             <View style={styles.view}>
-              <Caption>There are no pending requests</Caption>
+              <ActivityIndicator />
             </View>
           )}
-          {pending.map((request) => (
-            <React.Fragment key={request.id}>
-              <List.Item
-                title={request.requesterUser.username}
-                description='Incoming friend request'
-                left={() => <Avatar.Image size={50} source={{}} />}
-                right={() => (
-                  <>
-                    <IconButton
-                      icon='check'
-                      onPress={() => accept(request.id)}
-                      color={
-                        context.theme === 'light'
-                          ? colors.backdrop
-                          : colors.disabled
-                      }
-                    />
-                    <IconButton
-                      icon='close'
-                      onPress={() => reject(request.id)}
-                      color={
-                        context.theme === 'light'
-                          ? colors.backdrop
-                          : colors.disabled
-                      }
-                    />
-                  </>
-                )}
-              />
-              <Divider inset />
-            </React.Fragment>
-          ))}
         </ScrollView>
       </View>
     )
@@ -291,32 +281,40 @@ const Friends = (props: Props) => {
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={refresh} />
           }>
-          {sent.length === 0 && (
+          {loaded ? (
+            <>
+              {sent.length === 0 && (
+                <View style={styles.view}>
+                  <Caption>There are no sent requests</Caption>
+                </View>
+              )}
+              {sent.map((request) => (
+                <React.Fragment key={request.id}>
+                  <List.Item
+                    title={request.requesteeUser.username}
+                    description='Outgoing friend request'
+                    left={() => <Avatar.Image size={50} source={{}} />}
+                    right={() => (
+                      <IconButton
+                        icon='close'
+                        onPress={() => cancel(request.id)}
+                        color={
+                          context.theme === 'light'
+                            ? colors.backdrop
+                            : colors.disabled
+                        }
+                      />
+                    )}
+                  />
+                  <Divider inset />
+                </React.Fragment>
+              ))}
+            </>
+          ) : (
             <View style={styles.view}>
-              <Caption>There are no sent requests</Caption>
+              <ActivityIndicator />
             </View>
           )}
-          {sent.map((request) => (
-            <React.Fragment key={request.id}>
-              <List.Item
-                title={request.requesteeUser.username}
-                description='Outgoing friend request'
-                left={() => <Avatar.Image size={50} source={{}} />}
-                right={() => (
-                  <IconButton
-                    icon='close'
-                    onPress={() => cancel(request.id)}
-                    color={
-                      context.theme === 'light'
-                        ? colors.backdrop
-                        : colors.disabled
-                    }
-                  />
-                )}
-              />
-              <Divider inset />
-            </React.Fragment>
-          ))}
         </ScrollView>
       </View>
     )
