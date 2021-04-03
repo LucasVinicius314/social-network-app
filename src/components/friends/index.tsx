@@ -1,15 +1,25 @@
 import * as React from 'react'
 
-import { Button, Headline, Surface, useTheme } from 'react-native-paper'
+import {
+  Avatar,
+  Button,
+  Divider,
+  Headline,
+  IconButton,
+  List,
+  Surface,
+  useTheme,
+} from 'react-native-paper'
 import { CompositeNavigationProp, RouteProp } from '@react-navigation/native'
 import {
   KeyboardView,
   MDTextInput,
   StatusBar,
 } from '@suresure/react-native-components'
-import { Requests, Responses } from '../../typescript'
+import { Models, Requests, Responses } from '../../typescript'
 import { SafeAreaView, ScrollView, StyleSheet, View } from 'react-native'
 import { SceneMap, TabBar, TabView } from 'react-native-tab-view'
+import { doGetPending, doGetSent } from '../../utils/requests'
 
 import { AxiosResponse } from 'axios'
 import { Context } from '../../context/appcontext'
@@ -17,8 +27,6 @@ import { DrawerNavigationProp } from '@react-navigation/drawer'
 import { DrawerParamList } from '../../navigation/Drawer'
 import { RootParamList } from '../../navigation/Root'
 import { StackNavigationProp } from '@react-navigation/stack'
-import { color } from 'react-native-reanimated'
-import { doLogin } from '../../utils/requests'
 import { log } from '../../utils/log'
 
 type Navigation = CompositeNavigationProp<
@@ -32,15 +40,44 @@ type Props = {
   route: Route
 }
 
-const FriendsList = () => <View style={{ flex: 1 }} />
-
-const PendingList = () => <View style={{ flex: 1 }} />
-
-const SentList = () => <View style={{ flex: 1 }} />
-
 const Friends = (props: Props) => {
   const context = React.useContext(Context)
   const { colors } = useTheme()
+
+  const [sent, setSent] = React.useState<Models.FriendRequest[]>([])
+  const [pending, setPending] = React.useState<Models.FriendRequest[]>([])
+
+  React.useEffect(() => {
+    const func = () => {
+      getPending()
+      getSent()
+    }
+    func()
+  }, [])
+
+  const getPending = () => {
+    doGetPending().then(({ data, status }) => {
+      if (status !== 200) {
+        data = data as Responses.Base
+        alert(data.message)
+      } else {
+        data = data as Models.FriendRequest[]
+        setPending(data)
+      }
+    })
+  }
+
+  const getSent = () => {
+    doGetSent().then(({ data, status }) => {
+      if (status !== 200) {
+        data = data as Responses.Base
+        alert(data.message)
+      } else {
+        data = data as Models.FriendRequest[]
+        setSent(data)
+      }
+    })
+  }
 
   const [index, setIndex] = React.useState<number>(0)
   const [routes] = React.useState([
@@ -48,6 +85,78 @@ const Friends = (props: Props) => {
     { key: 'second', title: 'Pending' },
     { key: 'third', title: 'Sent' },
   ])
+
+  const FriendsList = () => {
+    return <View style={{ flex: 1 }}></View>
+  }
+
+  const PendingList = () => {
+    return (
+      <View style={{ flex: 1 }}>
+        <ScrollView>
+          {pending.map((request) => (
+            <React.Fragment key={request.id}>
+              <List.Item
+                title={request.requesterUser.username}
+                description='Incoming friend request'
+                left={() => <Avatar.Image size={50} source={{}} />}
+                right={() => (
+                  <>
+                    <IconButton
+                      icon='check'
+                      color={
+                        context.theme === 'light'
+                          ? colors.backdrop
+                          : colors.disabled
+                      }
+                    />
+                    <IconButton
+                      icon='close'
+                      color={
+                        context.theme === 'light'
+                          ? colors.backdrop
+                          : colors.disabled
+                      }
+                    />
+                  </>
+                )}
+              />
+              <Divider inset />
+            </React.Fragment>
+          ))}
+        </ScrollView>
+      </View>
+    )
+  }
+
+  const SentList = () => {
+    return (
+      <View style={{ flex: 1 }}>
+        <ScrollView>
+          {sent.map((request) => (
+            <React.Fragment key={request.id}>
+              <List.Item
+                title={request.requesteeUser.username}
+                description='Outgoing friend request'
+                left={() => <Avatar.Image size={50} source={{}} />}
+                right={() => (
+                  <IconButton
+                    icon='close'
+                    color={
+                      context.theme === 'light'
+                        ? colors.backdrop
+                        : colors.disabled
+                    }
+                  />
+                )}
+              />
+              <Divider inset />
+            </React.Fragment>
+          ))}
+        </ScrollView>
+      </View>
+    )
+  }
 
   const renderScene = SceneMap({
     first: FriendsList,

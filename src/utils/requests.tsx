@@ -33,6 +33,18 @@ export const doSendFriendRequest = (params: Requests.FriendRequest) => {
   return axios.post<Responses.Base>('/friendrequest/send', params)
 }
 
+export const doGetPending = () => {
+  return axios.post<Responses.Base | Models.FriendRequest[]>(
+    '/friendrequest/pending'
+  )
+}
+
+export const doGetSent = () => {
+  return axios.post<Responses.Base | Models.FriendRequest[]>(
+    '/friendrequest/sent'
+  )
+}
+
 export const doGetPostsComplete = (context: AppContext) => {
   return axios
     .post<Responses.Base | Models.UserPost[]>('/post/all')

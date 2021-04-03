@@ -82,6 +82,15 @@ export namespace Models {
     updatedAt: string
     username: string
   }
+  export type FriendRequest = {
+    createdAt: string
+    id: number
+    requesteeId: number
+    requesteeUser: User
+    requesterId: number
+    requesterUser: User
+    updatedAt: string
+  }
   export type UserPost = Post & {
     user: User
   }
