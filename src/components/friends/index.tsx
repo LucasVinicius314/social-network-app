@@ -10,6 +10,7 @@ import {
   List,
   Snackbar,
   Surface,
+  TouchableRipple,
   useTheme,
 } from 'react-native-paper'
 import { CompositeNavigationProp, RouteProp } from '@react-navigation/native'
@@ -159,6 +160,10 @@ const Friends = (props: Props) => {
     props.navigation.navigate('Chat')
   }
 
+  const goToProfile = (id: number, name: string) => {
+    props.navigation.navigate('Profile', { id, name })
+  }
+
   const [index, setIndex] = React.useState<number>(0)
   const [routes] = React.useState([
     { key: 'first', title: 'Friends' },
@@ -183,7 +188,22 @@ const Friends = (props: Props) => {
               <List.Item
                 title={friend.user.username}
                 description='Friend'
-                left={() => <Avatar.Image size={50} source={{}} />}
+                left={() => (
+                  <View
+                    style={{
+                      borderRadius: 50,
+                      height: 50,
+                      overflow: 'hidden',
+                      width: 50,
+                    }}>
+                    <TouchableRipple
+                      onPress={() =>
+                        goToProfile(friend.user.id, friend.user.username)
+                      }>
+                      <Avatar.Image size={50} source={{}} />
+                    </TouchableRipple>
+                  </View>
+                )}
                 right={() => (
                   <>
                     <IconButton
