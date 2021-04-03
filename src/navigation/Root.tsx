@@ -2,6 +2,7 @@ import Drawer, { DrawerParamList } from './Drawer'
 
 import Account from '../components/account'
 import { Appbar } from 'react-native-paper'
+import Chat from '../components/chat'
 import Comments from '../components/comments'
 import { Context } from '../context/appcontext'
 import { DrawerActions } from '@react-navigation/native'
@@ -16,6 +17,7 @@ import { useTheme } from 'react-native-paper'
 
 export type RootParamList = {
   Account: undefined
+  Chat: undefined
   Comments: undefined
   Drawer: undefined
   Login: undefined
@@ -28,6 +30,8 @@ const resolveRouteName = (route: keyof (DrawerParamList & RootParamList)) => {
   switch (route) {
     case 'Account':
       return 'Edit Profile'
+    case 'Chat':
+      return 'Chat'
     case 'Comments':
       return 'Comments'
     case 'Drawer':
@@ -100,6 +104,7 @@ const Root = () => {
           <Screen name='Profile' component={Profile} />
           <Screen name='Account' component={Account} />
           <Screen name='NewPost' component={NewPost} />
+          <Screen name='Chat' component={Chat} />
         </>
       ) : (
         <>

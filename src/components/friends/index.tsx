@@ -36,23 +36,23 @@ const FriendsList = () => <View style={{ flex: 1 }} />
 
 const PendingList = () => <View style={{ flex: 1 }} />
 
+const SentList = () => <View style={{ flex: 1 }} />
+
 const Friends = (props: Props) => {
   const context = React.useContext(Context)
   const { colors } = useTheme()
-
-  const goToCreateAccount = () => {
-    props.navigation.navigate('Register')
-  }
 
   const [index, setIndex] = React.useState<number>(0)
   const [routes] = React.useState([
     { key: 'first', title: 'Friends' },
     { key: 'second', title: 'Pending' },
+    { key: 'third', title: 'Sent' },
   ])
 
   const renderScene = SceneMap({
     first: FriendsList,
     second: PendingList,
+    third: SentList,
   })
 
   return (

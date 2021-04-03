@@ -1,6 +1,5 @@
 import { AppContext, Models, Requests, Responses } from '../typescript'
 
-import { Context } from '../context/appcontext'
 import React from 'react'
 import { instance as axios } from '../services/axios'
 
@@ -28,6 +27,10 @@ export const doGetPosts = () => {
 
 export const doGetProfile = (params: Requests.Profile) => {
   return axios.post<Responses.Base | Models.User>('/user/profile', params)
+}
+
+export const doSendFriendRequest = (params: Requests.FriendRequest) => {
+  return axios.post<Responses.Base>('/friendrequest/send', params)
 }
 
 export const doGetPostsComplete = (context: AppContext) => {

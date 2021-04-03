@@ -58,7 +58,7 @@ const NewPost = (props: Props) => {
 
   const styles = StyleSheet.create({
     avatar: {
-      marginBottom: 20,
+      marginBottom: 10,
     },
     background: {
       backgroundColor: colors.disabled,

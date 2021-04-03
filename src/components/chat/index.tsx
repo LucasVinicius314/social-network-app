@@ -14,43 +14,46 @@ import {
   MDTextInput,
   StatusBar,
 } from '@suresure/react-native-components'
-import { Requests, Responses } from '../../typescript'
+import { Models, Requests, Responses } from '../../typescript'
+import {
+  doCreatePost,
+  doGetPosts,
+  doGetPostsComplete,
+  doLogin,
+} from '../../utils/requests'
 
 import { AxiosResponse } from 'axios'
 import { Context } from '../../context/appcontext'
 import { RootParamList } from '../../navigation/Root'
 import { RouteProp } from '@react-navigation/native'
 import { StackNavigationProp } from '@react-navigation/stack'
-import { doLogin } from '../../utils/requests'
 import { log } from '../../utils/log'
 
-type Navigation = StackNavigationProp<RootParamList, 'Login'>
-type Route = RouteProp<RootParamList, 'Login'>
+type Navigation = StackNavigationProp<RootParamList, 'Chat'>
+type Route = RouteProp<RootParamList, 'Chat'>
 
 type Props = {
   navigation: Navigation
   route: Route
 }
 
-const Account = (props: Props) => {
+const Chat = (props: Props) => {
   const context = React.useContext(Context)
 
   const { colors } = useTheme()
 
-  const [email, setEmail] = React.useState<string>(context.user?.email || '')
-  const [password, setPassword] = React.useState<string>('')
-  const [username, setUsername] = React.useState<string>(
-    context.user?.username || ''
-  )
+  const [content, setContent] = React.useState<string>('')
 
-  const update = () => {
-    // doLogin({ email: email, password: password }).then(({ data, status }) => {
-    //   if (status !== 200) {
-    //     alert(data.message)
-    //   } else {
-    //     alert(data.message)
-    //   }
-    // })
+  const post = () => {
+    doCreatePost({ content: content }).then(({ data, status }) => {
+      if (status !== 200) {
+        alert(data.message)
+      } else {
+        doGetPostsComplete(context).then(() => {
+          props.navigation.goBack()
+        })
+      }
+    })
   }
 
   const styles = StyleSheet.create({
@@ -89,26 +92,18 @@ const Account = (props: Props) => {
             <View style={styles.wrapper}>
               <Avatar.Image source={{}} size={90} style={styles.avatar} />
               <MDTextInput
-                onChangeText={setUsername}
+                onChangeText={setContent}
                 style={styles.textInput}
-                value={username}
-                label='Username'
+                value={content}
+                label='Content'
+                multiline
               />
-              <MDTextInput
-                onChangeText={setEmail}
-                style={styles.textInput}
-                keyboardType='email-address'
-                value={email}
-                label='Email'
-              />
-              <MDTextInput
-                onChangeText={setPassword}
-                style={styles.textInput}
-                value={password}
-                label='Password'
-              />
-              <Button mode='contained' onPress={update} style={styles.button}>
-                Update
+              <Button
+                mode='contained'
+                onPress={post}
+                style={styles.button}
+                disabled>
+                Post
               </Button>
             </View>
           </Surface>
@@ -118,4 +113,4 @@ const Account = (props: Props) => {
   )
 }
 
-export default Account
+export default Chat

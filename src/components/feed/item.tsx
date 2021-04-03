@@ -88,7 +88,9 @@ export const Item = (props: Props) => {
           )}
           right={({ size }) => (
             <IconButton
-              color={colors.backdrop}
+              color={
+                context.theme === 'light' ? colors.backdrop : colors.disabled
+              }
               size={size}
               icon='dots-vertical'
               onPress={() => {}}
@@ -100,7 +102,9 @@ export const Item = (props: Props) => {
         </Card.Content>
         <Card.Actions style={styles.actions}>
           <IconButton
-            color={colors.backdrop}
+            color={
+              context.theme === 'light' ? colors.backdrop : colors.disabled
+            }
             icon='thumb-up-outline'
             onPress={() => {}}
           />

@@ -49,6 +49,9 @@ export namespace Requests {
   export type Profile = {
     id: number
   }
+  export type FriendRequest = {
+    requesteeId: number
+  }
 }
 
 export namespace Responses {

@@ -47,7 +47,7 @@ const resolveIcon = ({
     case 'Feed':
       return (
         <Icons.MaterialCommunityIcons
-          name='file-document'
+          name='view-dashboard-outline'
           size={size}
           color={color}
         />

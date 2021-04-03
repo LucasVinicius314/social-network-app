@@ -5,6 +5,7 @@ import {
   Avatar,
   Button,
   Headline,
+  Snackbar,
   Surface,
   Title,
   useTheme,
@@ -19,9 +20,11 @@ import { Models, Requests, Responses } from '../../typescript'
 import { doGetProfile, doLogin } from '../../utils/requests'
 
 import { AxiosResponse } from 'axios'
+import { Context } from '../../context/appcontext'
 import { RootParamList } from '../../navigation/Root'
 import { RouteProp } from '@react-navigation/native'
 import { StackNavigationProp } from '@react-navigation/stack'
+import { doSendFriendRequest } from '../../utils/requests'
 import { log } from '../../utils/log'
 
 type Navigation = StackNavigationProp<RootParamList, 'Profile'>
@@ -33,10 +36,12 @@ type Props = {
 }
 
 const Profile = (props: Props) => {
+  const context = React.useContext(Context)
   const { colors } = useTheme()
 
   const [loaded, setLoaded] = React.useState<boolean>(false)
   const [user, setUser] = React.useState<Models.User | undefined>(undefined)
+  const [snackbar, setSnackbar] = React.useState<string>('')
 
   React.useEffect(() => {
     const func = () => {
@@ -56,8 +61,14 @@ const Profile = (props: Props) => {
   }, [])
 
   const styles = StyleSheet.create({
+    actionRow: {
+      backgroundColor: colors.background,
+      flexDirection: 'row',
+      justifyContent: 'space-around',
+      paddingVertical: 20,
+    },
     avatar: {
-      marginBottom: 20,
+      marginBottom: 10,
     },
     background: {
       backgroundColor: colors.disabled,
@@ -65,6 +76,9 @@ const Profile = (props: Props) => {
     },
     button: {
       marginBottom: 10,
+    },
+    headline: {
+      paddingHorizontal: 10,
     },
     mainCol: {
       paddingHorizontal: 10,
@@ -81,6 +95,25 @@ const Profile = (props: Props) => {
     },
   })
 
+  const dismissSnackbar = () => {
+    setSnackbar('')
+  }
+
+  const goToChat = () => {
+    props.navigation.navigate('Chat')
+  }
+
+  const sendFriendRequest = () => {
+    doSendFriendRequest({ requesteeId: props.route.params.id }).then(
+      ({ data, status }) => {
+        if (status !== 200) {
+        } else {
+        }
+        setSnackbar(data.message)
+      }
+    )
+  }
+
   return (
     <SafeAreaView>
       <StatusBar />
@@ -90,29 +123,40 @@ const Profile = (props: Props) => {
           <Surface style={styles.mainCol}>
             <View style={styles.wrapper}>
               <Avatar.Image source={{}} size={90} style={styles.avatar} />
-              {loaded ? <Title>{'sa'}</Title> : <ActivityIndicator />}
+              {loaded ? (
+                <Headline style={styles.headline}>{user?.username}</Headline>
+              ) : (
+                <ActivityIndicator />
+              )}
             </View>
           </Surface>
+          {loaded && (
+            <Surface style={styles.actionRow}>
+              <Button
+                onPress={sendFriendRequest}
+                disabled={user?.id === context.user?.id}>
+                Add
+              </Button>
+              <Button
+                onPress={goToChat}
+                disabled={user?.id === context.user?.id}>
+                Message
+              </Button>
+            </Surface>
+          )}
         </ScrollView>
       </Surface>
+      <Snackbar
+        visible={snackbar.length !== 0}
+        onDismiss={dismissSnackbar}
+        action={{
+          label: 'Ok',
+          onPress: dismissSnackbar,
+        }}>
+        {snackbar}
+      </Snackbar>
     </SafeAreaView>
   )
 }
-
-const styles = StyleSheet.create({
-  scrollViewContent: {
-    paddingHorizontal: 10,
-    paddingVertical: 10,
-  },
-  textInput: {
-    marginBottom: 10,
-  },
-  surface: {
-    height: '100%',
-  },
-  button: {
-    marginBottom: 10,
-  },
-})
 
 export default Profile
