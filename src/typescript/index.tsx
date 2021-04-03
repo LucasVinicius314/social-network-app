@@ -52,6 +52,12 @@ export namespace Requests {
   export type FriendRequest = {
     requesteeId: number
   }
+  export type CancelFriendRequest = {
+    id: number
+  }
+  export type RejectFriendRequest = {
+    id: number
+  }
 }
 
 export namespace Responses {

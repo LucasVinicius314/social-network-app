@@ -7,6 +7,7 @@ import {
   Headline,
   IconButton,
   List,
+  Snackbar,
   Surface,
   useTheme,
 } from 'react-native-paper'
@@ -17,9 +18,20 @@ import {
   StatusBar,
 } from '@suresure/react-native-components'
 import { Models, Requests, Responses } from '../../typescript'
-import { SafeAreaView, ScrollView, StyleSheet, View } from 'react-native'
+import {
+  RefreshControl,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  View,
+} from 'react-native'
 import { SceneMap, TabBar, TabView } from 'react-native-tab-view'
-import { doGetPending, doGetSent } from '../../utils/requests'
+import {
+  doCancelRequest,
+  doGetPending,
+  doGetSent,
+  doRejectRequest,
+} from '../../utils/requests'
 
 import { AxiosResponse } from 'axios'
 import { Context } from '../../context/appcontext'
@@ -44,6 +56,8 @@ const Friends = (props: Props) => {
   const context = React.useContext(Context)
   const { colors } = useTheme()
 
+  const [refreshing, setRefreshing] = React.useState<boolean>(false)
+  const [snackbar, setSnackbar] = React.useState<string>('')
   const [sent, setSent] = React.useState<Models.FriendRequest[]>([])
   const [pending, setPending] = React.useState<Models.FriendRequest[]>([])
 
@@ -52,14 +66,19 @@ const Friends = (props: Props) => {
       getPending()
       getSent()
     }
+    const unsub = props.navigation.addListener('focus', ({}) => {
+      getPending()
+      getSent()
+    })
     func()
+    return unsub
   }, [])
 
   const getPending = () => {
     doGetPending().then(({ data, status }) => {
       if (status !== 200) {
         data = data as Responses.Base
-        alert(data.message)
+        setSnackbar(data.message)
       } else {
         data = data as Models.FriendRequest[]
         setPending(data)
@@ -68,15 +87,43 @@ const Friends = (props: Props) => {
   }
 
   const getSent = () => {
-    doGetSent().then(({ data, status }) => {
-      if (status !== 200) {
-        data = data as Responses.Base
-        alert(data.message)
-      } else {
-        data = data as Models.FriendRequest[]
-        setSent(data)
-      }
-    })
+    doGetSent()
+      .then(({ data, status }) => {
+        if (status !== 200) {
+          data = data as Responses.Base
+          setSnackbar(data.message)
+        } else {
+          data = data as Models.FriendRequest[]
+          setSent(data)
+        }
+      })
+      .finally(() => setRefreshing(false))
+  }
+
+  const cancel = (id: number) => {
+    doCancelRequest({ id })
+      .then(({ data, status }) => {
+        setSnackbar(data.message)
+      })
+      .finally(getSent)
+  }
+
+  const reject = (id: number) => {
+    doRejectRequest({ id })
+      .then(({ data, status }) => {
+        setSnackbar(data.message)
+      })
+      .finally(getPending)
+  }
+
+  const refresh = () => {
+    setRefreshing(true)
+    getSent()
+    getPending()
+  }
+
+  const dismissSnackbar = () => {
+    setSnackbar('')
   }
 
   const [index, setIndex] = React.useState<number>(0)
@@ -93,7 +140,10 @@ const Friends = (props: Props) => {
   const PendingList = () => {
     return (
       <View style={{ flex: 1 }}>
-        <ScrollView>
+        <ScrollView
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={refresh} />
+          }>
           {pending.map((request) => (
             <React.Fragment key={request.id}>
               <List.Item
@@ -112,6 +162,7 @@ const Friends = (props: Props) => {
                     />
                     <IconButton
                       icon='close'
+                      onPress={() => reject(request.id)}
                       color={
                         context.theme === 'light'
                           ? colors.backdrop
@@ -132,7 +183,10 @@ const Friends = (props: Props) => {
   const SentList = () => {
     return (
       <View style={{ flex: 1 }}>
-        <ScrollView>
+        <ScrollView
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={refresh} />
+          }>
           {sent.map((request) => (
             <React.Fragment key={request.id}>
               <List.Item
@@ -142,6 +196,7 @@ const Friends = (props: Props) => {
                 right={() => (
                   <IconButton
                     icon='close'
+                    onPress={() => cancel(request.id)}
                     color={
                       context.theme === 'light'
                         ? colors.backdrop
@@ -168,8 +223,6 @@ const Friends = (props: Props) => {
     <SafeAreaView>
       <StatusBar />
       <Surface style={styles.surface}>
-        {/* <ScrollView contentContainerStyle={styles.scrollViewContent}> */}
-        {/* <KeyboardView> */}
         <TabView
           lazy={false}
           tabBarPosition='top'
@@ -189,8 +242,15 @@ const Friends = (props: Props) => {
             />
           )}
         />
-        {/* </KeyboardView> */}
-        {/* </ScrollView> */}
+        <Snackbar
+          visible={snackbar.length !== 0}
+          onDismiss={dismissSnackbar}
+          action={{
+            label: 'Ok',
+            onPress: dismissSnackbar,
+          }}>
+          {snackbar}
+        </Snackbar>
       </Surface>
     </SafeAreaView>
   )
