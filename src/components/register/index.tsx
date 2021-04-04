@@ -1,9 +1,15 @@
 import * as React from 'react'
 
-import { Button, Surface, useTheme } from 'react-native-paper'
+import {
+  Button,
+  TextInput as PaperTextInput,
+  Surface,
+  useTheme,
+} from 'react-native-paper'
 import { SafeAreaView, ScrollView, StyleSheet, TextInput } from 'react-native'
 
 import { Context } from '../../context/appcontext'
+import { LoadingIndicator } from '../LoadingIndicator'
 import { LogoText } from '../LogoText'
 import { MDTextInput } from '@suresure/react-native-components'
 import { RootParamList } from '../../navigation/Root'
@@ -22,8 +28,10 @@ type Props = {
 
 const Register = (props: Props) => {
   const [email, setEmail] = React.useState<string>('')
+  const [loaded, setLoaded] = React.useState<boolean>(true)
   const [password, setPassword] = React.useState<string>('')
   const [username, setUsername] = React.useState<string>('')
+  const [passwordVisible, setPasswordVisible] = React.useState<boolean>(false)
 
   const { colors } = useTheme()
 
@@ -34,16 +42,21 @@ const Register = (props: Props) => {
   const passwordRef = React.useRef<TextInput>(null)
 
   const register = () => {
-    doRegister({ email: email, password: password, username: username }).then(
-      ({ data, status }) => {
+    setLoaded(false)
+    doRegister({ email: email, password: password, username: username })
+      .then(({ data, status }) => {
         if (status === 200) {
           context.app?.setUser(data)
           context.app?.setLogged(true)
         } else {
           alert(data.message)
         }
-      }
-    )
+      })
+      .then(() => setLoaded(true))
+  }
+
+  const togglePasswordVisible = () => {
+    setPasswordVisible(!passwordVisible)
   }
 
   return (
@@ -86,11 +99,20 @@ const Register = (props: Props) => {
             label='Password'
             ref={passwordRef}
             onSubmitEditing={register}
+            secureTextEntry={!passwordVisible}
+            right={
+              <PaperTextInput.Icon
+                forceTextInputFocus={false}
+                onPress={togglePasswordVisible}
+                name={passwordVisible ? 'eye-off' : 'eye'}
+              />
+            }
           />
           <Button mode='contained' onPress={register}>
             Create Account
           </Button>
         </ScrollView>
+        <LoadingIndicator visible={!loaded} />
       </Surface>
     </SafeAreaView>
   )
@@ -101,11 +123,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 10,
   },
-  textInput: {
-    marginBottom: 10,
-  },
   surface: {
     height: '100%',
+  },
+  textInput: {
+    marginBottom: 10,
   },
 })
 

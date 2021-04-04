@@ -76,12 +76,16 @@ const Friends = (props: Props) => {
   }, [])
 
   const getAll = async () => {
-    return await Promise.all([getPending(), getSent(), getFriends()]).finally(
-      () => {
+    return await Promise.all([getPending(), getSent(), getFriends()])
+      .then(([_pending, _sent, _friends]) => {
+        setPending(_pending || [])
+        setSent(_sent || [])
+        setFriends(_friends || [])
+      })
+      .finally(() => {
         setLoaded(true)
         setRefreshing(false)
-      }
-    )
+      })
   }
 
   const getPending = async () => {
@@ -90,8 +94,7 @@ const Friends = (props: Props) => {
         data = data as Responses.Base
         setSnackbar(data.message)
       } else {
-        data = data as Models.FriendRequest[]
-        setPending(data)
+        return data as Models.FriendRequest[]
       }
     })
   }
@@ -103,8 +106,7 @@ const Friends = (props: Props) => {
           data = data as Responses.Base
           setSnackbar(data.message)
         } else {
-          data = data as Models.FriendRequest[]
-          setSent(data)
+          return data as Models.FriendRequest[]
         }
       })
       .finally(() => setRefreshing(false))
@@ -117,8 +119,7 @@ const Friends = (props: Props) => {
           data = data as Responses.Base
           setSnackbar(data.message)
         } else {
-          data = data as Models.Friend[]
-          setFriends(data)
+          return data as Models.Friend[]
         }
       })
       .finally(() => setRefreshing(false))

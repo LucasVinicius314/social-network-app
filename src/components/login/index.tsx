@@ -1,6 +1,11 @@
 import * as React from 'react'
 
-import { Button, Surface, useTheme } from 'react-native-paper'
+import {
+  Button,
+  TextInput as PaperTextInput,
+  Surface,
+  useTheme,
+} from 'react-native-paper'
 import { SafeAreaView, ScrollView, StyleSheet, TextInput } from 'react-native'
 
 import { Context } from '../../context/appcontext'
@@ -25,6 +30,7 @@ const Login = (props: Props) => {
   const [email, setEmail] = React.useState<string>('')
   const [loaded, setLoaded] = React.useState<boolean>(true)
   const [password, setPassword] = React.useState<string>('')
+  const [passwordVisible, setPasswordVisible] = React.useState<boolean>(false)
 
   const { colors } = useTheme()
 
@@ -49,6 +55,10 @@ const Login = (props: Props) => {
 
   const goToCreateAccount = () => {
     props.navigation.navigate('Register')
+  }
+
+  const togglePasswordVisible = () => {
+    setPasswordVisible(!passwordVisible)
   }
 
   return (
@@ -81,6 +91,14 @@ const Login = (props: Props) => {
             label='Password'
             ref={passwordRef}
             onSubmitEditing={login}
+            secureTextEntry={!passwordVisible}
+            right={
+              <PaperTextInput.Icon
+                forceTextInputFocus={false}
+                onPress={togglePasswordVisible}
+                name={passwordVisible ? 'eye-off' : 'eye'}
+              />
+            }
           />
           <Button mode='contained' onPress={login} style={styles.button}>
             Login

@@ -18,6 +18,8 @@ import { StyleSheet, View } from 'react-native'
 
 import { Context } from '../context/appcontext'
 import Friends from '../components/friends'
+import { Logo } from '../components/Logo'
+import { LogoText } from '../components/LogoText'
 import { RootParamList } from './Root'
 import { RouteProp } from '@react-navigation/native'
 import Settings from '../components/settings'
@@ -100,41 +102,63 @@ const Drawer = (props: Props) => {
   return (
     <Navigator
       drawerContent={(props) => (
-        <>
-          <Surface
-            style={[styles.surface, context.theme === 'light' && styles.light]}>
-            <View style={styles.mainWrapper}>
-              <Avatar.Image source={{}} />
-              <View style={styles.wrapper}>
-                <Title>{context.user?.username}</Title>
-                <Caption>{context.user?.email}</Caption>
+        <View
+          style={{
+            justifyContent: 'space-between',
+            flex: 1,
+          }}>
+          <View>
+            <Surface
+              style={[
+                styles.surface,
+                context.theme === 'light' && styles.light,
+              ]}>
+              <View style={styles.mainWrapper}>
+                <Avatar.Image source={{}} />
+                <View style={styles.wrapper}>
+                  <Title>{context.user?.username}</Title>
+                  <Caption>{context.user?.email}</Caption>
+                </View>
               </View>
-            </View>
-            <View style={styles.buttonWrapper}>
-              <Button onPress={goToAccount} style={styles.button}>
-                Edit Profile
-              </Button>
-            </View>
+              <View style={styles.buttonWrapper}>
+                <Button onPress={goToAccount} style={styles.button}>
+                  Edit Profile
+                </Button>
+              </View>
+            </Surface>
+            {props.state.routes.map((route) => {
+              const descriptor = resolveDescriptor(props.descriptors, route.key)
+              const drawerLabel = descriptor.options.drawerLabel
+              return (
+                <Fragment key={route.key}>
+                  {drawerLabel === 'Settings' && <Divider />}
+                  <TouchableRipple
+                    onPress={() => props.navigation.navigate(route.name)}>
+                    <List.Item
+                      title={drawerLabel}
+                      left={() =>
+                        resolveIcon(route.name as keyof DrawerParamList)
+                      }
+                    />
+                  </TouchableRipple>
+                </Fragment>
+              )
+            })}
+          </View>
+          <Surface
+            style={{
+              backgroundColor:
+                context.theme === 'light' ? colors.background : colors.backdrop,
+            }}>
+            <LogoText
+              iconStroke={colors.primary}
+              height={100}
+              textFill={
+                context.theme === 'light' ? colors.placeholder : colors.disabled
+              }
+            />
           </Surface>
-          {props.state.routes.map((route) => {
-            const descriptor = resolveDescriptor(props.descriptors, route.key)
-            const drawerLabel = descriptor.options.drawerLabel
-            return (
-              <Fragment key={route.key}>
-                {drawerLabel === 'Settings' && <Divider />}
-                <TouchableRipple
-                  onPress={() => props.navigation.navigate(route.name)}>
-                  <List.Item
-                    title={drawerLabel}
-                    left={() =>
-                      resolveIcon(route.name as keyof DrawerParamList)
-                    }
-                  />
-                </TouchableRipple>
-              </Fragment>
-            )
-          })}
-        </>
+        </View>
       )}>
       <Screen name='Tabs' component={Tabs} options={{ drawerLabel: 'Home' }} />
       <Screen
