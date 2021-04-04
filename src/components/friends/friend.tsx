@@ -13,6 +13,7 @@ import { StyleSheet, View } from 'react-native'
 
 import { Context } from '../../context/appcontext'
 import { Models } from '../../typescript'
+import { config } from '../../config'
 
 type Props = {
   friend: Models.Friend
@@ -65,7 +66,12 @@ const Friend = (props: Props) => {
         left={() => (
           <View style={[styles.avatarWrapper, { overflow: 'hidden' }]}>
             <TouchableRipple onPress={goToProfile}>
-              <Avatar.Image size={avatarSize} source={{}} />
+              <Avatar.Image
+                size={avatarSize}
+                source={{
+                  uri: `${config.CDN_URL}/${props.friend.user?.profilePicture}`,
+                }}
+              />
             </TouchableRipple>
           </View>
         )}

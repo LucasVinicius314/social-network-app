@@ -28,6 +28,7 @@ import { RootParamList } from '../../navigation/Root'
 import { RouteProp } from '@react-navigation/native'
 import { StackNavigationProp } from '@react-navigation/stack'
 import { TabsParamList } from '../../navigation/Tabs'
+import { config } from '../../config'
 import { log } from '../../utils/log'
 
 type Props = ParentProps & {
@@ -82,7 +83,12 @@ export const Item = (props: Props) => {
                 overflow: 'hidden',
               }}>
               <TouchableRipple onPress={goToProfile}>
-                <Avatar.Image source={{}} size={size} />
+                <Avatar.Image
+                  source={{
+                    uri: `${config.CDN_URL}/${props.post.user?.profilePicture}`,
+                  }}
+                  size={size}
+                />
               </TouchableRipple>
             </View>
           )}

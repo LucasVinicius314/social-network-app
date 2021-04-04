@@ -43,6 +43,7 @@ import Friend from './friend'
 import { RootParamList } from '../../navigation/Root'
 import { StackNavigationProp } from '@react-navigation/stack'
 import { StatusBar } from '../StatusBar'
+import { config } from '../../config'
 import { log } from '../../utils/log'
 
 type Navigation = CompositeNavigationProp<
@@ -234,7 +235,14 @@ const Friends = (props: Props) => {
                   <List.Item
                     title={request.requesterUser.username}
                     description='Incoming friend request'
-                    left={() => <Avatar.Image size={50} source={{}} />}
+                    left={() => (
+                      <Avatar.Image
+                        size={50}
+                        source={{
+                          uri: `${config.CDN_URL}/${request.requesterUser.profilePicture}`,
+                        }}
+                      />
+                    )}
                     right={() => (
                       <>
                         <IconButton
@@ -291,7 +299,14 @@ const Friends = (props: Props) => {
                   <List.Item
                     title={request.requesteeUser.username}
                     description='Outgoing friend request'
-                    left={() => <Avatar.Image size={50} source={{}} />}
+                    left={() => (
+                      <Avatar.Image
+                        size={50}
+                        source={{
+                          uri: `${config.CDN_URL}/${request.requesteeUser.profilePicture}`,
+                        }}
+                      />
+                    )}
                     right={() => (
                       <IconButton
                         icon='close'

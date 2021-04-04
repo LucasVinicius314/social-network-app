@@ -21,6 +21,7 @@ import { RootParamList } from '../../navigation/Root'
 import { RouteProp } from '@react-navigation/native'
 import { StackNavigationProp } from '@react-navigation/stack'
 import { StatusBar } from '../StatusBar'
+import { config } from '../../config'
 import { doSendFriendRequest } from '../../utils/requests'
 import { log } from '../../utils/log'
 
@@ -116,10 +117,21 @@ const Profile = (props: Props) => {
       <StatusBar />
       <Surface style={styles.surface}>
         <ScrollView>
-          <Image style={styles.background} source={{}} />
+          <Image
+            style={styles.background}
+            source={{
+              uri: `${config.CDN_URL}/${user?.coverPicture}`,
+            }}
+          />
           <Surface style={styles.mainCol}>
             <View style={styles.wrapper}>
-              <Avatar.Image source={{}} size={90} style={styles.avatar} />
+              <Avatar.Image
+                source={{
+                  uri: `${config.CDN_URL}/${user?.profilePicture}`,
+                }}
+                size={90}
+                style={styles.avatar}
+              />
               {loaded ? (
                 <Headline style={styles.headline}>{user?.username}</Headline>
               ) : (

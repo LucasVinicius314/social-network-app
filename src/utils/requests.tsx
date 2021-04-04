@@ -1,3 +1,5 @@
+// import * as FormData from 'form-data'
+
 import { AppContext, Models, Requests, Responses } from '../typescript'
 
 import React from 'react'
@@ -63,6 +65,24 @@ export const doAcceptRequest = (params: Requests.AcceptFriendRequest) => {
 
 export const doRemoveFriend = (params: Requests.RemoveFriend) => {
   return axios.post<Responses.Base>('/friend/remove', params)
+}
+
+export const doPictureUpload = (params: Requests.UploadPicture) => {
+  const uri = params.image.uri
+  const name = uri.split('/').pop() || ''
+  const match = /\.(\w+)$/.exec(name)
+  const type = match ? `image/${match[1]}` : `image`
+  const formData = new FormData()
+  formData.append('scope', params.scope)
+  formData.append('image', {
+    //@ts-ignore
+    uri: uri,
+    name: name,
+    type: type,
+  })
+  return axios.post<Responses.Base>('/picture/upload', formData).then(() => {
+    doValidate({ context: params.context })
+  })
 }
 
 export const doValidate = ({

@@ -24,6 +24,7 @@ import { RootParamList } from '../../navigation/Root'
 import { RouteProp } from '@react-navigation/native'
 import { StackNavigationProp } from '@react-navigation/stack'
 import { StatusBar } from '../StatusBar'
+import { config } from '../../config'
 import { log } from '../../utils/log'
 
 type Navigation = StackNavigationProp<RootParamList, 'NewPost'>
@@ -87,7 +88,13 @@ const NewPost = (props: Props) => {
           <Image style={styles.background} source={{}} />
           <Surface style={styles.mainCol}>
             <View style={styles.wrapper}>
-              <Avatar.Image source={{}} size={90} style={styles.avatar} />
+              <Avatar.Image
+                source={{
+                  uri: `${config.CDN_URL}/${context.user?.profilePicture}`,
+                }}
+                size={90}
+                style={styles.avatar}
+              />
               <MDTextInput
                 onChangeText={setContent}
                 style={styles.textInput}

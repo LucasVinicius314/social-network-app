@@ -1,3 +1,4 @@
+import * as ImagePicker from 'expo-image-picker'
 import * as React from 'react'
 
 import {
@@ -6,11 +7,13 @@ import {
   Headline,
   Surface,
   TextInput,
+  TouchableRipple,
   useTheme,
 } from 'react-native-paper'
 import { Image, SafeAreaView, ScrollView, StyleSheet, View } from 'react-native'
 import { KeyboardView, MDTextInput } from '@suresure/react-native-components'
 import { Requests, Responses } from '../../typescript'
+import { doLogin, doPictureUpload } from '../../utils/requests'
 
 import { AxiosResponse } from 'axios'
 import { Context } from '../../context/appcontext'
@@ -18,7 +21,7 @@ import { RootParamList } from '../../navigation/Root'
 import { RouteProp } from '@react-navigation/native'
 import { StackNavigationProp } from '@react-navigation/stack'
 import { StatusBar } from '../StatusBar'
-import { doLogin } from '../../utils/requests'
+import { config } from '../../config'
 import { log } from '../../utils/log'
 
 type Navigation = StackNavigationProp<RootParamList, 'Login'>
@@ -40,6 +43,38 @@ const Account = (props: Props) => {
     context.user?.username || ''
   )
 
+  const pickProfileImage = async () => {
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync()
+    if (status === 'granted') {
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.All,
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 1,
+      })
+
+      if (!result.cancelled) {
+        doPictureUpload({ image: result, scope: 'profile', context: context })
+      }
+    }
+  }
+
+  const pickCoverImage = async () => {
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync()
+    if (status === 'granted') {
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.All,
+        allowsEditing: true,
+        aspect: [4, 1],
+        quality: 1,
+      })
+
+      if (!result.cancelled) {
+        doPictureUpload({ image: result, scope: 'cover', context: context })
+      }
+    }
+  }
+
   const update = () => {
     // doLogin({ email: email, password: password }).then(({ data, status }) => {
     //   if (status !== 200) {
@@ -51,8 +86,11 @@ const Account = (props: Props) => {
   }
 
   const styles = StyleSheet.create({
-    avatar: {
+    avatarWrapper: {
+      alignSelf: 'flex-start',
+      borderRadius: 90,
       marginBottom: 10,
+      overflow: 'hidden',
     },
     background: {
       backgroundColor: colors.disabled,
@@ -81,10 +119,26 @@ const Account = (props: Props) => {
       <StatusBar />
       <Surface style={styles.surface}>
         <ScrollView>
-          <Image style={styles.background} source={{}} />
+          <TouchableRipple onPress={pickCoverImage}>
+            <Image
+              style={styles.background}
+              source={{
+                uri: `${config.CDN_URL}/${context.user?.coverPicture}`,
+              }}
+            />
+          </TouchableRipple>
           <Surface style={styles.mainCol}>
             <View style={styles.wrapper}>
-              <Avatar.Image source={{}} size={90} style={styles.avatar} />
+              <View style={styles.avatarWrapper}>
+                <TouchableRipple onPress={pickProfileImage}>
+                  <Avatar.Image
+                    source={{
+                      uri: `${config.CDN_URL}/${context.user?.profilePicture}`,
+                    }}
+                    size={90}
+                  />
+                </TouchableRipple>
+              </View>
               <MDTextInput
                 onChangeText={setUsername}
                 style={styles.textInput}

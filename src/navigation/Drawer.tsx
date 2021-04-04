@@ -25,6 +25,7 @@ import { RouteProp } from '@react-navigation/native'
 import Settings from '../components/settings'
 import { StackNavigationProp } from '@react-navigation/stack'
 import Tabs from './Tabs'
+import { config } from '../config'
 import { createDrawerNavigator } from '@react-navigation/drawer'
 
 export type DrawerParamList = {
@@ -114,7 +115,11 @@ const Drawer = (props: Props) => {
                 context.theme === 'light' && styles.light,
               ]}>
               <View style={styles.mainWrapper}>
-                <Avatar.Image source={{}} />
+                <Avatar.Image
+                  source={{
+                    uri: `${config.CDN_URL}/${context.user?.profilePicture}`,
+                  }}
+                />
                 <View style={styles.wrapper}>
                   <Title>{context.user?.username}</Title>
                   <Caption>{context.user?.email}</Caption>

@@ -1,11 +1,14 @@
 import { Dispatch } from 'react'
 import { SetStateAction } from 'react'
 import { TabsParamList } from '../navigation/Tabs'
+import { ImagePickerResult } from 'expo-image-picker'
+import { ImageInfo } from 'expo-image-picker/build/ImagePicker.types'
 
 export type Log = 'none' | 'all'
 
 export type Config = {
   API_URL: string
+  CDN_URL: string
   CHANNEL: string | undefined
   LOG: Log
   VERSION: string
@@ -64,19 +67,18 @@ export namespace Requests {
   export type RemoveFriend = {
     id: number
   }
+  export type UploadPicture = {
+    scope: 'profile' | 'cover'
+    image: ImageInfo & ImagePickerResult
+    context: AppContext
+  }
 }
 
 export namespace Responses {
   export type Base = {
     message: string
   }
-  export type UserRegister = {
-    createdAt: string
-    email: string
-    id: number
-    updatedAt: string
-    username: string
-  }
+  export type UserRegister = Models.User
 }
 
 export namespace Models {
@@ -88,9 +90,11 @@ export namespace Models {
     userId: number
   }
   export type User = {
+    coverPicture: string | null
     createdAt: string
     email: string
     id: number
+    profilePicture: string | null
     updatedAt: string
     username: string
   }
