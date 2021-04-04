@@ -22,6 +22,7 @@ import { StatusBar } from '../StatusBar'
 import { config } from '../../config'
 import { doLogin } from '../../utils/requests'
 import { log } from '../../utils/log'
+import { setToken } from '../../utils/asyncstorage'
 
 type LoginScreenNavigationProp = StackNavigationProp<RootParamList, 'Login'>
 type LoginScreenRouteProp = RouteProp<RootParamList, 'Login'>
@@ -40,6 +41,7 @@ const Settings = (props: Props) => {
   }
 
   const logout = () => {
+    setToken(null)
     context.app?.setLogged(false)
     context.app?.setUser(undefined)
   }

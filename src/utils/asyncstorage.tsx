@@ -1,33 +1,29 @@
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { LoginInfo } from '../typescript'
 
-type GetLoginInfo = () => Promise<LoginInfo | null>
-type SetLoginInfo = (loginInfo: LoginInfo) => Promise<void>
+// export const getLoginInfo = async () => {
+//   const loginInfo = (await AsyncStorage.getItem(
+//     'login_info'
+//   )) as LoginInfo | null
+//   return loginInfo
+// }
 
-type GetToken = () => Promise<string | null>
-type SetToken = (token: string) => Promise<void>
+// export const setLoginInfo = async (loginInfo: LoginInfo) => {
+//   return void (await AsyncStorage.setItem(
+//     'login_info',
+//     JSON.stringify(loginInfo)
+//   ))
+// }
 
-const getLoginInfo: GetLoginInfo = async () => {
-  const loginInfo = (await AsyncStorage.getItem(
-    'login_info'
-  )) as LoginInfo | null
-  return loginInfo
-}
-
-const setLoginInfo: SetLoginInfo = async (loginInfo: LoginInfo) => {
-  return void (await AsyncStorage.setItem(
-    'login_info',
-    JSON.stringify(loginInfo)
-  ))
-}
-
-const getToken: GetToken = async () => {
+export const getToken = async () => {
   const token = (await AsyncStorage.getItem('token')) as string | null
   return token
 }
 
-const setToken: SetToken = async (token: string) => {
-  return void (await AsyncStorage.setItem('token', token))
+export const setToken = async (token: string | null) => {
+  if (token === null) {
+    return void (await AsyncStorage.removeItem('token'))
+  } else {
+    return void (await AsyncStorage.setItem('token', token))
+  }
 }
-
-export { getLoginInfo, setLoginInfo, getToken, setToken }

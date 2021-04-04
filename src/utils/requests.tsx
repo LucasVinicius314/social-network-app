@@ -65,6 +65,32 @@ export const doRemoveFriend = (params: Requests.RemoveFriend) => {
   return axios.post<Responses.Base>('/friend/remove', params)
 }
 
+export const doValidate = ({
+  context,
+  setUser,
+  setLogged,
+}: {
+  context?: AppContext
+  setLogged?: React.Dispatch<React.SetStateAction<boolean>>
+  setUser?: React.Dispatch<
+    React.SetStateAction<Responses.UserRegister | undefined>
+  >
+}) => {
+  return axios
+    .post<Responses.Base | Models.User>('/user/validate')
+    .then(({ data, status }) => {
+      if (status !== 200) {
+        data = data as Responses.Base
+        alert(data.message)
+      } else {
+        data = data as Models.User
+        if (context !== undefined) context.app?.setUser(data)
+        if (setUser !== undefined) setUser?.(data)
+        if (setLogged !== undefined) setLogged?.(true)
+      }
+    })
+}
+
 export const doGetPostsComplete = (context: AppContext) => {
   return axios
     .post<Responses.Base | Models.UserPost[]>('/post/all')

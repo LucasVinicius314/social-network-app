@@ -14,8 +14,11 @@ import { Provider as PaperProvider } from 'react-native-paper'
 import React from 'react'
 import RootNavigator from './src/navigation/Root'
 import { TabsParamList } from './src/navigation/Tabs'
+import { doValidate } from './src/utils/requests'
+import { getToken } from './src/utils/asyncstorage'
 
 const App = () => {
+  const [loaded, setLoaded] = React.useState<boolean>(false)
   const [logged, setLogged] = React.useState<boolean>(false)
   const [theme, setTheme] = React.useState<'light' | 'dark'>('light')
   const [selectedTab, setSelectedTab] = React.useState<keyof TabsParamList>(
@@ -25,6 +28,18 @@ const App = () => {
     undefined
   )
   const [posts, setPosts] = React.useState<Models.UserPost[]>([])
+
+  React.useEffect(() => {
+    const func = async () => {
+      const token = await getToken()
+      if (token !== null) {
+        await doValidate({ setUser, setLogged })
+      }
+    }
+    func().finally(() => setLoaded(true))
+  }, [])
+
+  if (!loaded) return null
 
   return (
     <Context.Provider
