@@ -236,12 +236,28 @@ const Friends = (props: Props) => {
                     title={request.requesterUser.username}
                     description='Incoming friend request'
                     left={() => (
-                      <Avatar.Image
-                        size={50}
-                        source={{
-                          uri: `${config.CDN_URL}/${request.requesterUser.profilePicture}`,
-                        }}
-                      />
+                      <View
+                        style={{
+                          borderRadius: 50,
+                          height: 50,
+                          overflow: 'hidden',
+                          width: 50,
+                        }}>
+                        <TouchableRipple
+                          onPress={() =>
+                            goToProfile(
+                              request.requesterUser.id,
+                              request.requesterUser.username
+                            )
+                          }>
+                          <Avatar.Image
+                            size={50}
+                            source={{
+                              uri: `${config.CDN_URL}/${request.requesterUser.profilePicture}`,
+                            }}
+                          />
+                        </TouchableRipple>
+                      </View>
                     )}
                     right={() => (
                       <>
@@ -300,12 +316,28 @@ const Friends = (props: Props) => {
                     title={request.requesteeUser.username}
                     description='Outgoing friend request'
                     left={() => (
-                      <Avatar.Image
-                        size={50}
-                        source={{
-                          uri: `${config.CDN_URL}/${request.requesteeUser.profilePicture}`,
-                        }}
-                      />
+                      <View
+                        style={{
+                          borderRadius: 50,
+                          height: 50,
+                          overflow: 'hidden',
+                          width: 50,
+                        }}>
+                        <TouchableRipple
+                          onPress={() =>
+                            goToProfile(
+                              request.requesteeUser.id,
+                              request.requesteeUser.username
+                            )
+                          }>
+                          <Avatar.Image
+                            size={50}
+                            source={{
+                              uri: `${config.CDN_URL}/${request.requesteeUser.profilePicture}`,
+                            }}
+                          />
+                        </TouchableRipple>
+                      </View>
                     )}
                     right={() => (
                       <IconButton

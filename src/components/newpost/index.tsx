@@ -85,7 +85,12 @@ const NewPost = (props: Props) => {
       <StatusBar />
       <Surface style={styles.surface}>
         <ScrollView>
-          <Image style={styles.background} source={{}} />
+          <Image
+            style={styles.background}
+            source={{
+              uri: `${config.CDN_URL}/${context.user?.coverPicture}`,
+            }}
+          />
           <Surface style={styles.mainCol}>
             <View style={styles.wrapper}>
               <Avatar.Image
