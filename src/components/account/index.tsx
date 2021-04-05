@@ -13,7 +13,7 @@ import {
 import { Image, SafeAreaView, ScrollView, StyleSheet, View } from 'react-native'
 import { KeyboardView, MDTextInput } from '@suresure/react-native-components'
 import { Requests, Responses } from '../../typescript'
-import { doLogin, doPictureUpload } from '../../utils/requests'
+import { doLogin, doPictureUpload, doUpdateProfile } from '../../utils/requests'
 
 import { AxiosResponse } from 'axios'
 import { Context } from '../../context/appcontext'
@@ -76,13 +76,18 @@ const Account = (props: Props) => {
   }
 
   const update = () => {
-    // doLogin({ email: email, password: password }).then(({ data, status }) => {
-    //   if (status !== 200) {
-    //     alert(data.message)
-    //   } else {
-    //     alert(data.message)
-    //   }
-    // })
+    const _password = password.length !== 0 ? password : undefined
+    doUpdateProfile({
+      username: username,
+      email: email,
+      password: _password,
+    }).then(({ data, status }) => {
+      if (status !== 200) {
+        alert(data.message)
+      } else {
+        context.app?.setUser(data)
+      }
+    })
   }
 
   const styles = StyleSheet.create({

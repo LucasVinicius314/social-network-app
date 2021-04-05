@@ -72,6 +72,11 @@ export namespace Requests {
     image: ImageInfo & ImagePickerResult
     context: AppContext
   }
+  export type UpdateProfile = {
+    username: string
+    email: string
+    password?: string
+  }
 }
 
 export namespace Responses {

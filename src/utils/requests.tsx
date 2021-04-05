@@ -19,6 +19,13 @@ export const doRegister = (params: Requests.Register) => {
   )
 }
 
+export const doUpdateProfile = (params: Requests.UpdateProfile) => {
+  return axios.post<Responses.Base & Responses.UserRegister>(
+    '/user/update',
+    params
+  )
+}
+
 export const doCreatePost = (params: Requests.CreatePost) => {
   return axios.post<Responses.Base>('/post/create', params)
 }

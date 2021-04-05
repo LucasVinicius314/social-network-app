@@ -60,6 +60,7 @@ const { Navigator, Screen } = createBottomTabNavigator<TabsParamList>()
 const Drawer = (props: Props) => {
   return (
     <Navigator
+      tabBarOptions={{ style: { borderTopColor: 'red', borderTopWidth: 0 } }}
       screenOptions={({ route }) => ({
         tabBarIcon: ({ color, size, focused }) =>
           resolveIcon({ color, focused, name: route.name, size }),
