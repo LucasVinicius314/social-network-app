@@ -77,6 +77,12 @@ export namespace Requests {
     email: string
     password?: string
   }
+  export type LikePost = {
+    id: number
+  }
+  export type UnLikePost = {
+    id: number
+  }
 }
 
 export namespace Responses {
@@ -118,7 +124,17 @@ export namespace Models {
     user: User
     updatedAt: string
   }
+  export type Like = {
+    createdAt: string
+    id: number
+    postId: number
+    updatedAt: string
+    userId: number
+  }
   export type UserPost = Post & {
+    likeCount: number
+    liked: 0 | 1
+    likes: Like[]
     user: User
   }
 }

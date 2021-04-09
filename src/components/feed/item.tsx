@@ -3,9 +3,11 @@ import * as React from 'react'
 import {
   Avatar,
   Button,
+  Caption,
   Card,
   Headline,
   IconButton,
+  Menu,
   Paragraph,
   Surface,
   TouchableRipple,
@@ -18,7 +20,13 @@ import {
 } from '@suresure/react-native-components'
 import { Models, Requests, Responses } from '../../typescript'
 import { SafeAreaView, ScrollView, StyleSheet, View } from 'react-native'
-import { doGetPosts, doGetPostsComplete, doLogin } from '../../utils/requests'
+import {
+  doGetPosts,
+  doGetPostsComplete,
+  doLikePost,
+  doLogin,
+  doUnLikePost,
+} from '../../utils/requests'
 
 import { AxiosResponse } from 'axios'
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs'
@@ -38,6 +46,20 @@ type Props = ParentProps & {
 export const Item = (props: Props) => {
   const context = React.useContext(Context)
   const { colors } = useTheme()
+
+  const [menuOpen, setMenuOpen] = React.useState<boolean>(false)
+
+  const [liked, setLiked] = React.useState<0 | 1>(props.post.liked)
+
+  const [likeDisabled, setLikeDisabled] = React.useState<boolean>(false)
+
+  const closeMenu = () => {
+    setMenuOpen(false)
+  }
+
+  const openMenu = () => {
+    setMenuOpen(true)
+  }
 
   const styles = StyleSheet.create({
     actions: {
@@ -68,6 +90,20 @@ export const Item = (props: Props) => {
     })
   }
 
+  const toggleLike = () => {
+    setLikeDisabled(true)
+    if (liked === 1) {
+      setLiked(0)
+      doUnLikePost({ id: props.post.id }).finally(() => setLikeDisabled(false))
+    } else {
+      setLiked(1)
+      doLikePost({ id: props.post.id }).finally(() => setLikeDisabled(false))
+    }
+  }
+
+  const likeCount =
+    props.post.likeCount + (props.post.liked === 0 ? liked : liked - 1)
+
   return (
     <View style={styles.wrapper}>
       <Card>
@@ -93,26 +129,45 @@ export const Item = (props: Props) => {
             </View>
           )}
           right={({ size }) => (
-            <IconButton
-              color={
-                context.theme === 'light' ? colors.backdrop : colors.disabled
-              }
-              size={size}
-              icon='dots-vertical'
-              onPress={() => {}}
-            />
+            <Menu
+              visible={menuOpen}
+              onDismiss={closeMenu}
+              anchor={
+                <IconButton
+                  color={
+                    context.theme === 'light'
+                      ? colors.backdrop
+                      : colors.disabled
+                  }
+                  size={size}
+                  icon='dots-vertical'
+                  onPress={openMenu}
+                />
+              }>
+              <Menu.Item onPress={() => {}} title='...' />
+            </Menu>
           )}
         />
         <Card.Content>
           <Paragraph>{props.post.content}</Paragraph>
         </Card.Content>
+        <Card.Content style={{ alignItems: 'flex-end' }}>
+          <Caption>
+            {likeCount} like{likeCount !== 1 && 's'}
+          </Caption>
+        </Card.Content>
         <Card.Actions style={styles.actions}>
           <IconButton
+            onPress={toggleLike}
+            disabled={likeDisabled}
+            icon={liked === 1 ? 'thumb-up' : 'thumb-up-outline'}
             color={
-              context.theme === 'light' ? colors.backdrop : colors.disabled
+              liked === 1
+                ? colors.primary
+                : context.theme === 'light'
+                ? colors.backdrop
+                : colors.disabled
             }
-            icon='thumb-up-outline'
-            onPress={() => {}}
           />
         </Card.Actions>
       </Card>

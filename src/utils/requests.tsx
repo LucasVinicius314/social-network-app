@@ -34,6 +34,14 @@ export const doGetPosts = () => {
   return axios.post<Responses.Base | Models.Post[]>('/post/all')
 }
 
+export const doLikePost = (params: Requests.LikePost) => {
+  return axios.post<Responses.Base>('/post/like', params)
+}
+
+export const doUnLikePost = (params: Requests.UnLikePost) => {
+  return axios.post<Responses.Base>('/post/unlike', params)
+}
+
 export const doGetProfile = (params: Requests.Profile) => {
   return axios.post<Responses.Base | Models.User>('/user/profile', params)
 }
