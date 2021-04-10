@@ -83,6 +83,16 @@ export namespace Requests {
   export type UnLikePost = {
     id: number
   }
+  export type Comments = {
+    id: number
+  }
+  export type CreateComment = {
+    postId: number
+    content: string
+  }
+  export type DeleteComment = {
+    id: number
+  }
 }
 
 export namespace Responses {
@@ -131,10 +141,22 @@ export namespace Models {
     updatedAt: string
     userId: number
   }
+  export type Comment = {
+    content: string
+    createdAt: string
+    id: number
+    postId: number
+    updatedAt: string
+    userId: number
+  }
   export type UserPost = Post & {
+    commentCount: number
     likeCount: number
     liked: 0 | 1
     likes: Like[]
+    user: User
+  }
+  export type UserComment = Comment & {
     user: User
   }
 }

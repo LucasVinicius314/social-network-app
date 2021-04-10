@@ -21,7 +21,6 @@ import {
 import { Models, Requests, Responses } from '../../typescript'
 import { SafeAreaView, ScrollView, StyleSheet, View } from 'react-native'
 import {
-  doGetPosts,
   doGetPostsComplete,
   doLikePost,
   doLogin,
@@ -90,6 +89,13 @@ export const Item = (props: Props) => {
     })
   }
 
+  const goToComments = () => {
+    props.navigation.navigate('Comments', {
+      id: props.post.id,
+      name: undefined,
+    })
+  }
+
   const toggleLike = () => {
     setLikeDisabled(true)
     if (liked === 1) {
@@ -103,6 +109,7 @@ export const Item = (props: Props) => {
 
   const likeCount =
     props.post.likeCount + (props.post.liked === 0 ? liked : liked - 1)
+  const commentCount = props.post.commentCount
 
   return (
     <View style={styles.wrapper}>
@@ -151,7 +158,14 @@ export const Item = (props: Props) => {
         <Card.Content>
           <Paragraph>{props.post.content}</Paragraph>
         </Card.Content>
-        <Card.Content style={{ alignItems: 'flex-end' }}>
+        <Card.Content
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+          }}>
+          <Caption>
+            {commentCount} comment{commentCount !== 1 && 's'}
+          </Caption>
           <Caption>
             {likeCount} like{likeCount !== 1 && 's'}
           </Caption>
@@ -167,6 +181,13 @@ export const Item = (props: Props) => {
                 : context.theme === 'light'
                 ? colors.backdrop
                 : colors.disabled
+            }
+          />
+          <IconButton
+            onPress={goToComments}
+            icon='comment-outline'
+            color={
+              context.theme === 'light' ? colors.backdrop : colors.disabled
             }
           />
         </Card.Actions>

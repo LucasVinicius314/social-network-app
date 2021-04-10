@@ -5,6 +5,8 @@ import { AppContext, Models, Requests, Responses } from '../typescript'
 import React from 'react'
 import { instance as axios } from '../services/axios'
 
+// auth
+
 export const doLogin = (params: Requests.Login) => {
   return axios.post<Responses.Base & Responses.UserRegister>(
     '/user/login',
@@ -19,6 +21,34 @@ export const doRegister = (params: Requests.Register) => {
   )
 }
 
+export const doValidate = ({
+  context,
+  setUser,
+  setLogged,
+}: {
+  context?: AppContext
+  setLogged?: React.Dispatch<React.SetStateAction<boolean>>
+  setUser?: React.Dispatch<
+    React.SetStateAction<Responses.UserRegister | undefined>
+  >
+}) => {
+  return axios
+    .post<Responses.Base | Models.User>('/user/validate')
+    .then(({ data, status }) => {
+      if (status !== 200) {
+        data = data as Responses.Base
+        alert(data.message)
+      } else {
+        data = data as Models.User
+        if (context !== undefined) context.app?.setUser(data)
+        if (setUser !== undefined) setUser?.(data)
+        if (setLogged !== undefined) setLogged?.(true)
+      }
+    })
+}
+
+// user
+
 export const doUpdateProfile = (params: Requests.UpdateProfile) => {
   return axios.post<Responses.Base & Responses.UserRegister>(
     '/user/update',
@@ -26,12 +56,14 @@ export const doUpdateProfile = (params: Requests.UpdateProfile) => {
   )
 }
 
-export const doCreatePost = (params: Requests.CreatePost) => {
-  return axios.post<Responses.Base>('/post/create', params)
+export const doGetProfile = (params: Requests.Profile) => {
+  return axios.post<Responses.Base | Models.User>('/user/profile', params)
 }
 
-export const doGetPosts = () => {
-  return axios.post<Responses.Base | Models.Post[]>('/post/all')
+// post
+
+export const doCreatePost = (params: Requests.CreatePost) => {
+  return axios.post<Responses.Base>('/post/create', params)
 }
 
 export const doLikePost = (params: Requests.LikePost) => {
@@ -42,9 +74,38 @@ export const doUnLikePost = (params: Requests.UnLikePost) => {
   return axios.post<Responses.Base>('/post/unlike', params)
 }
 
-export const doGetProfile = (params: Requests.Profile) => {
-  return axios.post<Responses.Base | Models.User>('/user/profile', params)
+export const doGetPostsComplete = (context: AppContext) => {
+  return axios
+    .post<Responses.Base | Models.UserPost[]>('/post/all')
+    .then(({ data, status }) => {
+      if (status !== 200) {
+        data = data as Responses.Base
+        alert(data.message)
+      } else {
+        data = data as Models.UserPost[]
+        context.app?.setPosts(data)
+      }
+    })
 }
+
+// comment
+
+export const doGetComments = (params: Requests.Comments) => {
+  return axios.post<Responses.Base | Models.UserComment[]>(
+    '/comment/all',
+    params
+  )
+}
+
+export const doCreateComment = (params: Requests.CreateComment) => {
+  return axios.post<Responses.Base>('/comment/create', params)
+}
+
+export const doDeleteComment = (params: Requests.DeleteComment) => {
+  return axios.post<Responses.Base>('/comment/delete', params)
+}
+
+// friend
 
 export const doSendFriendRequest = (params: Requests.FriendRequest) => {
   return axios.post<Responses.Base>('/friendrequest/send', params)
@@ -82,6 +143,8 @@ export const doRemoveFriend = (params: Requests.RemoveFriend) => {
   return axios.post<Responses.Base>('/friend/remove', params)
 }
 
+// picture
+
 export const doPictureUpload = (params: Requests.UploadPicture) => {
   const uri = params.image.uri
   const name = uri.split('/').pop() || ''
@@ -98,44 +161,4 @@ export const doPictureUpload = (params: Requests.UploadPicture) => {
   return axios.post<Responses.Base>('/picture/upload', formData).then(() => {
     doValidate({ context: params.context })
   })
-}
-
-export const doValidate = ({
-  context,
-  setUser,
-  setLogged,
-}: {
-  context?: AppContext
-  setLogged?: React.Dispatch<React.SetStateAction<boolean>>
-  setUser?: React.Dispatch<
-    React.SetStateAction<Responses.UserRegister | undefined>
-  >
-}) => {
-  return axios
-    .post<Responses.Base | Models.User>('/user/validate')
-    .then(({ data, status }) => {
-      if (status !== 200) {
-        data = data as Responses.Base
-        alert(data.message)
-      } else {
-        data = data as Models.User
-        if (context !== undefined) context.app?.setUser(data)
-        if (setUser !== undefined) setUser?.(data)
-        if (setLogged !== undefined) setLogged?.(true)
-      }
-    })
-}
-
-export const doGetPostsComplete = (context: AppContext) => {
-  return axios
-    .post<Responses.Base | Models.UserPost[]>('/post/all')
-    .then(({ data, status }) => {
-      if (status !== 200) {
-        data = data as Responses.Base
-        alert(data.message)
-      } else {
-        data = data as Models.UserPost[]
-        context.app?.setPosts(data)
-      }
-    })
 }

@@ -1,95 +1,153 @@
 import * as React from 'react'
 
-import { Button, Headline, Surface, useTheme } from 'react-native-paper'
-import { KeyboardView, MDTextInput } from '@suresure/react-native-components'
-import { Requests, Responses } from '../../typescript'
-import { SafeAreaView, ScrollView, StyleSheet } from 'react-native'
+import {
+  Avatar,
+  Caption,
+  Divider,
+  IconButton,
+  List,
+  Menu,
+  TextInput as PaperTextInput,
+  Surface,
+  useTheme,
+} from 'react-native-paper'
+import {
+  Keyboard,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  TextInput,
+  View,
+} from 'react-native'
+import { Models, Responses } from '../../typescript'
+import { doCreateComment, doGetComments } from '../../utils/requests'
 
-import { AxiosResponse } from 'axios'
+import { Comment } from './comment'
+import { Context } from '../../context/appcontext'
+import { LoadingIndicator } from '../LoadingIndicator'
+import { MDTextInput } from '@suresure/react-native-components'
 import { RootParamList } from '../../navigation/Root'
 import { RouteProp } from '@react-navigation/native'
 import { StackNavigationProp } from '@react-navigation/stack'
 import { StatusBar } from '../StatusBar'
-import { doLogin } from '../../utils/requests'
-import { log } from '../../utils/log'
 
-type LoginScreenNavigationProp = StackNavigationProp<RootParamList, 'Login'>
-type LoginScreenRouteProp = RouteProp<RootParamList, 'Login'>
+type Navigation = StackNavigationProp<RootParamList, 'Comments'>
+type Route = RouteProp<RootParamList, 'Comments'>
 
-type Props = {
-  navigation: LoginScreenNavigationProp
-  route: LoginScreenRouteProp
+export type Props = {
+  navigation: Navigation
+  route: Route
 }
 
-const Login = (props: Props) => {
-  const [email, setEmail] = React.useState<string>('')
-  const [password, setPassword] = React.useState<string>('')
-
+const Comments = (props: Props) => {
+  const context = React.useContext(Context)
   const { colors } = useTheme()
 
-  const login = () => {
-    doLogin({ email: email, password: password }).then(({ data, status }) => {
-      if (status !== 200) {
-        alert(data.message)
-      } else {
-        alert(data.message)
-      }
-    })
+  const [comments, setComments] = React.useState<Models.UserComment[]>([])
+  const [loaded, setLoaded] = React.useState<boolean>(false)
+  const [content, setContent] = React.useState<string>('')
+
+  const commentRef = React.useRef<TextInput>(null)
+
+  React.useEffect(() => {
+    getComments()
+  }, [])
+
+  const getComments = () => {
+    setLoaded(false)
+    doGetComments({ id: props.route.params.id })
+      .then(({ data, status }) => {
+        if (status !== 200) {
+          data = data as Responses.Base
+          alert(data.message)
+        } else {
+          data = data as Models.UserComment[]
+          setComments(data)
+        }
+      })
+      .finally(() => {
+        setContent('')
+        setLoaded(true)
+      })
   }
 
-  const goToCreateAccount = () => {
-    props.navigation.navigate('Register')
+  const createComment = () => {
+    if (content.length === 0) return
+    commentRef.current?.blur()
+    Keyboard.dismiss()
+    setLoaded(false)
+    doCreateComment({ content: content, postId: props.route.params.id })
+      .then(({ data, status }) => {
+        if (status !== 200) {
+          data = data as Responses.Base
+          alert(data.message)
+        } else {
+        }
+      })
+      .finally(getComments)
   }
+
+  const styles = StyleSheet.create({
+    button: {
+      marginBottom: 10,
+    },
+    message: {
+      alignItems: 'center',
+      paddingVertical: 50,
+    },
+    scrollView: {
+      flex: 1,
+      flexGrow: 1,
+    },
+    surface: {
+      padding: 10,
+    },
+    textInput: {
+      marginBottom: 10,
+    },
+  })
 
   return (
-    <SafeAreaView>
+    <SafeAreaView style={{ flex: 1 }}>
       <StatusBar />
+      <ScrollView style={styles.scrollView}>
+        {comments.length === 0 && loaded && (
+          <View style={styles.message}>
+            <Caption>No comments found</Caption>
+          </View>
+        )}
+        {comments.map((comment) => (
+          <Comment
+            key={comment.id}
+            comment={comment}
+            route={props.route}
+            navigation={props.navigation}
+            getComments={getComments}
+          />
+        ))}
+      </ScrollView>
       <Surface style={styles.surface}>
-        <ScrollView contentContainerStyle={styles.scrollViewContent}>
-          <KeyboardView>
-            <MDTextInput
-              onChangeText={setEmail}
-              style={styles.textInput}
-              keyboardType='email-address'
-              value={email}
-              label='Email'
+        <MDTextInput
+          label='Comment'
+          value={content}
+          onChangeText={setContent}
+          onSubmitEditing={createComment}
+          right={
+            <PaperTextInput.Icon
+              name='send'
+              onPress={createComment}
+              forceTextInputFocus={false}
+              disabled={content.length === 0}
+              color={
+                context.theme === 'light' ? colors.backdrop : colors.disabled
+              }
             />
-            <MDTextInput
-              onChangeText={setPassword}
-              style={styles.textInput}
-              value={password}
-              label='Password'
-            />
-            <Button mode='contained' onPress={login} style={styles.button}>
-              Login
-            </Button>
-            <Button
-              mode='text'
-              onPress={goToCreateAccount}
-              style={styles.button}>
-              Create Account
-            </Button>
-          </KeyboardView>
-        </ScrollView>
+          }
+        />
       </Surface>
+      <LoadingIndicator visible={!loaded} />
     </SafeAreaView>
   )
 }
 
-const styles = StyleSheet.create({
-  scrollViewContent: {
-    paddingHorizontal: 10,
-    paddingVertical: 10,
-  },
-  textInput: {
-    marginBottom: 10,
-  },
-  surface: {
-    height: '100%',
-  },
-  button: {
-    marginBottom: 10,
-  },
-})
-
-export default Login
+export default Comments

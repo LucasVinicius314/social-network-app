@@ -1,16 +1,23 @@
 import * as React from 'react'
 
-import { Button, Headline, Surface, useTheme } from 'react-native-paper'
+import {
+  Button,
+  Caption,
+  Headline,
+  Surface,
+  useTheme,
+} from 'react-native-paper'
 import { CompositeNavigationProp, RouteProp } from '@react-navigation/native'
 import { KeyboardView, MDTextInput } from '@suresure/react-native-components'
 import { Models, Requests, Responses } from '../../typescript'
 import { SafeAreaView, ScrollView, StyleSheet, View } from 'react-native'
-import { doGetPosts, doGetPostsComplete, doLogin } from '../../utils/requests'
+import { doGetPostsComplete, doLogin } from '../../utils/requests'
 
 import { AxiosResponse } from 'axios'
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs'
 import { Context } from '../../context/appcontext'
 import { Item } from './item'
+import { LoadingIndicator } from '../LoadingIndicator'
 import { RootParamList } from '../../navigation/Root'
 import { StackNavigationProp } from '@react-navigation/stack'
 import { StatusBar } from '../StatusBar'
@@ -32,9 +39,14 @@ const Feed = (props: Props) => {
   const context = React.useContext(Context)
   const { colors } = useTheme()
 
+  const [loaded, setLoaded] = React.useState<boolean>(false)
+
   React.useEffect(() => {
+    setLoaded(false)
     const func = () => {
-      doGetPostsComplete(context)
+      if (context.user !== undefined) {
+        doGetPostsComplete(context).finally(() => setLoaded(true))
+      }
     }
     const unsub = props.navigation.addListener('focus', () => {
       context.app?.setSelectedTab('Feed')
@@ -42,18 +54,22 @@ const Feed = (props: Props) => {
     context.app?.setSelectedTab('Feed')
     func()
     return unsub
-  }, [])
+  }, [context.user])
 
   return (
     <SafeAreaView>
       <StatusBar />
-      <KeyboardView>
-        <ScrollView contentContainerStyle={styles.scrollViewContent}>
-          {context.posts.map((post) => (
-            <Item {...props} key={post.id} post={post} />
-          ))}
-        </ScrollView>
-      </KeyboardView>
+      <ScrollView contentContainerStyle={styles.scrollViewContent}>
+        {context.posts.length === 0 && loaded && (
+          <View style={styles.message}>
+            <Caption>No posts found</Caption>
+          </View>
+        )}
+        {context.posts.map((post) => (
+          <Item {...props} key={post.id} post={post} />
+        ))}
+      </ScrollView>
+      <LoadingIndicator visible={!loaded} />
     </SafeAreaView>
   )
 }
@@ -61,6 +77,9 @@ const Feed = (props: Props) => {
 const styles = StyleSheet.create({
   button: {
     marginBottom: 10,
+  },
+  message: {
+    paddingVertical: 60,
   },
   scrollViewContent: {
     paddingHorizontal: 10,
