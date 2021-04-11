@@ -8,6 +8,7 @@ export type Log = 'none' | 'all'
 
 export type Config = {
   API_URL: string
+  SOCKET_URL: string
   CDN_URL: string
   CHANNEL: string | undefined
   LOG: Log
@@ -34,6 +35,15 @@ export type AppContext = {
     setPosts: Dispatch<SetStateAction<Models.UserPost[]>>
   }
   posts: Models.UserPost[]
+}
+
+export type ChatContext = {
+  data: {
+    chats: Models.UserChat[]
+  }
+  methods?: {
+    setChats: Dispatch<SetStateAction<Models.UserChat[]>>
+  }
 }
 
 export namespace Requests {
@@ -157,6 +167,16 @@ export namespace Models {
     user: User
   }
   export type UserComment = Comment & {
+    user: User
+  }
+  export type Chat = {
+    createdAt: string
+    id: number
+    updatedAt: string
+    user1Id: number
+    user2Id: number
+  }
+  export type UserChat = Chat & {
     user: User
   }
 }
