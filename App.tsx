@@ -19,6 +19,7 @@ import { TabsParamList } from './src/navigation/Tabs'
 import { config } from './src/config'
 import { getToken } from './src/utils/asyncstorage'
 import { io } from 'socket.io-client'
+import { log } from './src/utils/log'
 
 const App = () => {
   const [loaded, setLoaded] = React.useState<boolean>(false)
@@ -60,10 +61,10 @@ const App = () => {
       },
     })
     socket.on('connect_error', (e) => {
-      console.log(e)
+      log(e)
     })
     socket.on('connect', () => {
-      console.log('Connected to socket server')
+      log('Connected to socket server')
       socket.emit('aaa')
     })
     socket.on('test', (e) => {

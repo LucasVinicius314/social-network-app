@@ -105,12 +105,11 @@ const Profile = (props: Props) => {
   }
 
   const goToChat = () => {
-    const chatFound =
-      chatContext.data.chats.find(
-        (f) => f.user.id === props.route.params.id
-      ) !== undefined
-    if (chatFound) {
-      props.navigation.navigate('Chat')
+    const chatFound = chatContext.data.chats.find(
+      (f) => f.user.id === props.route.params.id
+    )
+    if (chatFound !== undefined) {
+      props.navigation.navigate('Chat', { id: chatFound.id, name: undefined })
     } else {
       setLoaded(false)
       doCreateChat({ userId: props.route.params.id }).then(
@@ -125,10 +124,15 @@ const Profile = (props: Props) => {
               } else {
                 data = data as Models.UserChat[]
                 chatContext.methods?.setChats(data)
+                props.navigation.navigate('Chat', {
+                  id:
+                    data.find((f) => f.user.id === props.route.params.id)?.id ||
+                    0,
+                  name: undefined,
+                })
               }
             })
             setLoaded(true)
-            props.navigation.navigate('Chat')
           }
         }
       )

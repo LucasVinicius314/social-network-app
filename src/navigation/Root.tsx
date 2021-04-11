@@ -17,7 +17,7 @@ import { useTheme } from 'react-native-paper'
 
 export type RootParamList = {
   Account: undefined
-  Chat: undefined
+  Chat: { id: number; name: undefined }
   Comments: { id: number; name: undefined }
   Drawer: undefined
   Login: undefined

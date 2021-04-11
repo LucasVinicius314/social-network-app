@@ -1,111 +1,113 @@
 import * as React from 'react'
 
 import {
-  Avatar,
-  Button,
-  Headline,
+  Caption,
+  TextInput as PaperTextInput,
   Surface,
-  TextInput,
   useTheme,
 } from 'react-native-paper'
-import { Image, SafeAreaView, ScrollView, StyleSheet, View } from 'react-native'
-import { KeyboardView, MDTextInput } from '@suresure/react-native-components'
-import { Models, Requests, Responses } from '../../typescript'
 import {
-  doCreatePost,
-  doGetPosts,
-  doGetPostsComplete,
-  doLogin,
-} from '../../utils/requests'
+  Keyboard,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  TextInput,
+  View,
+} from 'react-native'
+import { Models, Responses } from '../../typescript'
+import { doCreateComment, doGetComments } from '../../utils/requests'
 
-import { AxiosResponse } from 'axios'
+import { ChatContext } from '../../context/chatcontext'
 import { Context } from '../../context/appcontext'
+import { LoadingIndicator } from '../LoadingIndicator'
+import { MDTextInput } from '@suresure/react-native-components'
 import { RootParamList } from '../../navigation/Root'
 import { RouteProp } from '@react-navigation/native'
 import { StackNavigationProp } from '@react-navigation/stack'
 import { StatusBar } from '../StatusBar'
-import { log } from '../../utils/log'
 
 type Navigation = StackNavigationProp<RootParamList, 'Chat'>
 type Route = RouteProp<RootParamList, 'Chat'>
 
-type Props = {
+export type Props = {
   navigation: Navigation
   route: Route
 }
 
 const Chat = (props: Props) => {
   const context = React.useContext(Context)
-
+  const chatContext = React.useContext(ChatContext)
   const { colors } = useTheme()
 
+  const [loaded, setLoaded] = React.useState<boolean>(true)
   const [content, setContent] = React.useState<string>('')
 
-  const post = () => {
-    doCreatePost({ content: content }).then(({ data, status }) => {
-      if (status !== 200) {
-        alert(data.message)
-      } else {
-        doGetPostsComplete(context).then(() => {
-          props.navigation.goBack()
-        })
-      }
-    })
-  }
+  const inputRef = React.useRef<TextInput>(null)
+
+  const chat = chatContext.data.chats.find(
+    (f) => f.id === props.route.params.id
+  )
 
   const styles = StyleSheet.create({
-    avatar: {
-      marginBottom: 10,
-    },
-    background: {
-      backgroundColor: colors.disabled,
-      height: 100,
-    },
     button: {
       marginBottom: 10,
     },
-    mainCol: {
-      paddingHorizontal: 10,
+    message: {
+      alignItems: 'center',
+      paddingVertical: 50,
+    },
+    scrollView: {
+      flex: 1,
+      flexGrow: 1,
     },
     surface: {
-      height: '100%',
+      padding: 10,
     },
     textInput: {
       marginBottom: 10,
     },
-    wrapper: {
-      position: 'relative',
-      top: -45,
-    },
   })
 
   return (
-    <SafeAreaView>
+    <SafeAreaView style={{ flex: 1 }}>
       <StatusBar />
+      <ScrollView style={styles.scrollView}>
+        {[].length === 0 && loaded && (
+          <View style={styles.message}>
+            <Caption>No messages found</Caption>
+          </View>
+        )}
+        {/* {[].map((comment) => (
+          <Comment
+            key={comment.id}
+            comment={comment}
+            route={props.route}
+            navigation={props.navigation}
+            getComments={getComments}
+          />
+        ))} */}
+      </ScrollView>
       <Surface style={styles.surface}>
-        <ScrollView>
-          <Image style={styles.background} source={{}} />
-          <Surface style={styles.mainCol}>
-            <View style={styles.wrapper}>
-              <Avatar.Image source={{}} size={90} style={styles.avatar} />
-              <MDTextInput
-                onChangeText={setContent}
-                style={styles.textInput}
-                value={content}
-                label='Content'
-                multiline
-              />
-              <Button
-                mode='contained'
-                onPress={post}
-                style={styles.button}
-                disabled>
-                Post
-              </Button>
-            </View>
-          </Surface>
-        </ScrollView>
+        <MDTextInput
+          value={content}
+          // label='Comment'
+          onChangeText={setContent}
+          // onSubmitEditing={createComment}
+          placeholder={`Message ${chat?.user.username}`}
+          right={
+            <PaperTextInput.Icon
+              name='send'
+              // onPress={createComment}
+              forceTextInputFocus={false}
+              disabled={content.length === 0}
+              color={
+                context.theme === 'light' ? colors.backdrop : colors.disabled
+              }
+            />
+          }
+        />
       </Surface>
+      <LoadingIndicator visible={!loaded} />
     </SafeAreaView>
   )
 }

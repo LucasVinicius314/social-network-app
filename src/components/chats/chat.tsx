@@ -25,7 +25,7 @@ export const Chat = (props: Props) => {
   const { colors } = useTheme()
 
   const goToChat = () => {
-    props.navigation.navigate('Chat')
+    props.navigation.navigate('Chat', { id: props.chat.id, name: undefined })
   }
 
   const styles = StyleSheet.create({})
@@ -35,7 +35,6 @@ export const Chat = (props: Props) => {
       <TouchableRipple onPress={goToChat}>
         <List.Item
           title={props.chat.user.username}
-          description='Heebenanene'
           left={() => (
             <Avatar.Image
               size={50}

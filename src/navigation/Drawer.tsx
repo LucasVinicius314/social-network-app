@@ -18,7 +18,6 @@ import { StyleSheet, View } from 'react-native'
 
 import { Context } from '../context/appcontext'
 import Friends from '../components/friends'
-import { Logo } from '../components/Logo'
 import { LogoText } from '../components/LogoText'
 import { RootParamList } from './Root'
 import { RouteProp } from '@react-navigation/native'
