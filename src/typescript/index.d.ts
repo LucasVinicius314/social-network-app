@@ -103,6 +103,9 @@ export namespace Requests {
   export type DeleteComment = {
     id: number
   }
+  export type CreateChat = {
+    userId: number
+  }
 }
 
 export namespace Responses {

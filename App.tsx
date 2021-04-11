@@ -1,6 +1,7 @@
 import 'react-native-gesture-handler'
 
 import { Models, Responses } from './src/typescript'
+import { doGetChats, doValidate } from './src/utils/requests'
 import {
   navigationTheme,
   navigationThemeDark,
@@ -16,7 +17,6 @@ import React from 'react'
 import RootNavigator from './src/navigation/Root'
 import { TabsParamList } from './src/navigation/Tabs'
 import { config } from './src/config'
-import { doValidate } from './src/utils/requests'
 import { getToken } from './src/utils/asyncstorage'
 import { io } from 'socket.io-client'
 
@@ -39,6 +39,15 @@ const App = () => {
       if (token !== null) {
         await doValidate({ setUser, setLogged })
       }
+      await doGetChats().then(({ data, status }) => {
+        if (status !== 200) {
+          data = data as Responses.Base
+          alert(data.message)
+        } else {
+          data = data as Models.UserChat[]
+          setChats(data)
+        }
+      })
       await useSocket()
     }
     func().finally(() => setLoaded(true))

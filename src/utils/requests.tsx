@@ -162,3 +162,13 @@ export const doPictureUpload = (params: Requests.UploadPicture) => {
     doValidate({ context: params.context })
   })
 }
+
+// chat
+
+export const doGetChats = () => {
+  return axios.post<Responses.Base | Models.UserChat[]>('/chat/all')
+}
+
+export const doCreateChat = (params: Requests.CreateChat) => {
+  return axios.post<Responses.Base>('/chat/create', params)
+}

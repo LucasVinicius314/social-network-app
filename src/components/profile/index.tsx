@@ -13,9 +13,15 @@ import {
 import { Image, SafeAreaView, ScrollView, StyleSheet, View } from 'react-native'
 import { KeyboardView, MDTextInput } from '@suresure/react-native-components'
 import { Models, Requests, Responses } from '../../typescript'
-import { doGetProfile, doLogin } from '../../utils/requests'
+import {
+  doCreateChat,
+  doGetChats,
+  doGetProfile,
+  doLogin,
+} from '../../utils/requests'
 
 import { AxiosResponse } from 'axios'
+import { ChatContext } from '../../context/chatcontext'
 import { Context } from '../../context/appcontext'
 import { RootParamList } from '../../navigation/Root'
 import { RouteProp } from '@react-navigation/native'
@@ -35,6 +41,7 @@ type Props = {
 
 const Profile = (props: Props) => {
   const context = React.useContext(Context)
+  const chatContext = React.useContext(ChatContext)
   const { colors } = useTheme()
 
   const [loaded, setLoaded] = React.useState<boolean>(false)
@@ -98,7 +105,34 @@ const Profile = (props: Props) => {
   }
 
   const goToChat = () => {
-    props.navigation.navigate('Chat')
+    const chatFound =
+      chatContext.data.chats.find(
+        (f) => f.user.id === props.route.params.id
+      ) !== undefined
+    if (chatFound) {
+      props.navigation.navigate('Chat')
+    } else {
+      setLoaded(false)
+      doCreateChat({ userId: props.route.params.id }).then(
+        async ({ data, status }) => {
+          if (status !== 200) {
+            setSnackbar(data.message)
+          } else {
+            await doGetChats().then(({ data, status }) => {
+              if (status !== 200) {
+                data = data as Responses.Base
+                alert(data.message)
+              } else {
+                data = data as Models.UserChat[]
+                chatContext.methods?.setChats(data)
+              }
+            })
+            setLoaded(true)
+            props.navigation.navigate('Chat')
+          }
+        }
+      )
+    }
   }
 
   const sendFriendRequest = () => {

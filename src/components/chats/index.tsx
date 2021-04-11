@@ -1,30 +1,32 @@
 import * as React from 'react'
 
-import { Button, Headline, Surface, useTheme } from 'react-native-paper'
-import { KeyboardView, MDTextInput } from '@suresure/react-native-components'
-import { Requests, Responses } from '../../typescript'
-import { SafeAreaView, ScrollView, StyleSheet, View } from 'react-native'
+import { CompositeNavigationProp, RouteProp } from '@react-navigation/native'
+import { SafeAreaView, ScrollView } from 'react-native'
+import { Surface, useTheme } from 'react-native-paper'
 
-import { AxiosResponse } from 'axios'
+import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs'
+import { Chat } from './chat'
+import { ChatContext } from '../../context/chatcontext'
 import { Context } from '../../context/appcontext'
 import { RootParamList } from '../../navigation/Root'
-import { RouteProp } from '@react-navigation/native'
 import { StackNavigationProp } from '@react-navigation/stack'
 import { StatusBar } from '../StatusBar'
 import { TabsParamList } from '../../navigation/Tabs'
-import { doLogin } from '../../utils/requests'
-import { log } from '../../utils/log'
 
-type Navigation = StackNavigationProp<TabsParamList, 'Chats'>
+type Navigation = CompositeNavigationProp<
+  BottomTabNavigationProp<TabsParamList, 'Chats'>,
+  StackNavigationProp<RootParamList>
+>
 type Route = RouteProp<TabsParamList, 'Chats'>
 
-type Props = {
+export type Props = {
   navigation: Navigation
   route: Route
 }
 
-const Login = (props: Props) => {
+const Chats = (props: Props) => {
   const context = React.useContext(Context)
+  const chatContext = React.useContext(ChatContext)
   const { colors } = useTheme()
 
   React.useEffect(() => {
@@ -35,33 +37,22 @@ const Login = (props: Props) => {
   })
 
   return (
-    <SafeAreaView>
+    <SafeAreaView style={{ flex: 1 }}>
       <StatusBar />
-      <Surface style={styles.surface}>
-        <ScrollView contentContainerStyle={styles.scrollViewContent}>
-          <KeyboardView>
-            <View />
-          </KeyboardView>
+      <Surface style={{ flex: 1 }}>
+        <ScrollView>
+          {chatContext.data.chats.map((chat) => (
+            <Chat
+              chat={chat}
+              key={chat.id}
+              route={props.route}
+              navigation={props.navigation}
+            />
+          ))}
         </ScrollView>
       </Surface>
     </SafeAreaView>
   )
 }
 
-const styles = StyleSheet.create({
-  button: {
-    marginBottom: 10,
-  },
-  scrollViewContent: {
-    paddingHorizontal: 10,
-    paddingVertical: 10,
-  },
-  surface: {
-    height: '100%',
-  },
-  textInput: {
-    marginBottom: 10,
-  },
-})
-
-export default Login
+export default Chats
