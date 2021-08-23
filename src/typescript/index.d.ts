@@ -3,6 +3,7 @@ import { SetStateAction } from 'react'
 import { TabsParamList } from '../navigation/Tabs'
 import { ImagePickerResult } from 'expo-image-picker'
 import { ImageInfo } from 'expo-image-picker/build/ImagePicker.types'
+import { Socket } from 'socket.io-client'
 
 export type Log = 'none' | 'all'
 
@@ -35,6 +36,7 @@ export type AppContext = {
     setPosts: Dispatch<SetStateAction<Models.UserPost[]>>
   }
   posts: Models.UserPost[]
+  socket?: Socket
 }
 
 export type ChatContext = {
@@ -106,6 +108,10 @@ export namespace Requests {
   export type CreateChat = {
     userId: number
   }
+  export type SendMessage = {
+    content: string
+    chatId: number
+  }
 }
 
 export namespace Responses {
@@ -162,6 +168,14 @@ export namespace Models {
     updatedAt: string
     userId: number
   }
+  export type Message = {
+    content: string
+    chatId: number
+    createdAt: string
+    id: number
+    updatedAt: string
+    userId: number
+  }
   export type UserPost = Post & {
     commentCount: number
     likeCount: number
@@ -181,5 +195,6 @@ export namespace Models {
   }
   export type UserChat = Chat & {
     user: User
+    messages: Message[]
   }
 }

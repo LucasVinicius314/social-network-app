@@ -1,6 +1,7 @@
 import 'react-native-gesture-handler'
 
 import { Models, Responses } from './src/typescript'
+import { Socket, io } from 'socket.io-client'
 import { doGetChats, doValidate } from './src/utils/requests'
 import {
   navigationTheme,
@@ -18,7 +19,6 @@ import RootNavigator from './src/navigation/Root'
 import { TabsParamList } from './src/navigation/Tabs'
 import { config } from './src/config'
 import { getToken } from './src/utils/asyncstorage'
-import { io } from 'socket.io-client'
 import { log } from './src/utils/log'
 
 const App = () => {
@@ -33,6 +33,7 @@ const App = () => {
   )
   const [posts, setPosts] = React.useState<Models.UserPost[]>([])
   const [chats, setChats] = React.useState<Models.UserChat[]>([])
+  const [socket, setSocket] = React.useState<Socket | undefined>(undefined)
 
   React.useEffect(() => {
     const func = async () => {
@@ -65,11 +66,38 @@ const App = () => {
     })
     socket.on('connect', () => {
       log('Connected to socket server')
-      socket.emit('aaa')
     })
-    socket.on('test', (e) => {
-      alert(1)
+    socket.on(
+      'new_message',
+      (e: {
+        chatId: number
+        content: string
+        createdAt: string
+        id: number
+        updatedAt: string
+        userId: number
+      }) => {
+        console.log('new_message')
+        console.log(e)
+        console.log('chats')
+        console.log(chats)
+        const _chats = chats.map((v) => {
+          if (v.id !== e.chatId) {
+            return v
+          } else {
+            // v.messages.push(e)
+            return v
+          }
+        })
+        // setChats(_chats)
+      }
+    )
+    socket.on('message_sent', (e) => {
+      alert('msg sent')
+      console.log('====')
+      console.log(e)
     })
+    setSocket(socket)
   }
 
   if (!loaded) return null
@@ -82,6 +110,7 @@ const App = () => {
         theme: theme,
         selectedTab: selectedTab,
         posts: posts,
+        socket: socket,
         app: {
           setUser: setUser,
           setLogged: setLogged,

@@ -3,6 +3,7 @@
 import { AppContext, Models, Requests, Responses } from '../typescript'
 
 import React from 'react'
+import { Socket } from 'socket.io-client'
 import { instance as axios } from '../services/axios'
 
 // auth
@@ -171,4 +172,13 @@ export const doGetChats = () => {
 
 export const doCreateChat = (params: Requests.CreateChat) => {
   return axios.post<Responses.Base>('/chat/create', params)
+}
+
+// message
+
+export const doSendMessage = (
+  params: Requests.SendMessage,
+  socket: Socket | undefined
+) => {
+  socket?.emit('send_message', params)
 }

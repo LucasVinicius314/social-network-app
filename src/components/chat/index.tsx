@@ -4,6 +4,7 @@ import {
   Caption,
   TextInput as PaperTextInput,
   Surface,
+  Text,
   useTheme,
 } from 'react-native-paper'
 import {
@@ -15,12 +16,17 @@ import {
   View,
 } from 'react-native'
 import { Models, Responses } from '../../typescript'
-import { doCreateComment, doGetComments } from '../../utils/requests'
+import {
+  doCreateComment,
+  doGetComments,
+  doSendMessage,
+} from '../../utils/requests'
 
 import { ChatContext } from '../../context/chatcontext'
 import { Context } from '../../context/appcontext'
 import { LoadingIndicator } from '../LoadingIndicator'
 import { MDTextInput } from '@suresure/react-native-components'
+import { Message } from './message'
 import { RootParamList } from '../../navigation/Root'
 import { RouteProp } from '@react-navigation/native'
 import { StackNavigationProp } from '@react-navigation/stack'
@@ -41,12 +47,19 @@ const Chat = (props: Props) => {
 
   const [loaded, setLoaded] = React.useState<boolean>(true)
   const [content, setContent] = React.useState<string>('')
+  const [lines, setLines] = React.useState<number>(1)
 
   const inputRef = React.useRef<TextInput>(null)
 
   const chat = chatContext.data.chats.find(
     (f) => f.id === props.route.params.id
   )
+
+  const sendMessage = () => {
+    if (content.length !== 0) {
+      doSendMessage({ chatId: chat?.id || 0, content: content }, context.socket)
+    }
+  }
 
   const styles = StyleSheet.create({
     button: {
@@ -61,7 +74,8 @@ const Chat = (props: Props) => {
       flexGrow: 1,
     },
     surface: {
-      padding: 10,
+      padding: 6,
+      maxHeight: 100,
     },
     textInput: {
       marginBottom: 10,
@@ -71,33 +85,39 @@ const Chat = (props: Props) => {
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <StatusBar />
-      <ScrollView style={styles.scrollView}>
-        {[].length === 0 && loaded && (
+      <ScrollView
+        style={styles.scrollView}
+        contentContainerStyle={{ paddingHorizontal: 5 }}>
+        {chat?.messages.length === 0 && loaded && (
           <View style={styles.message}>
             <Caption>No messages found</Caption>
           </View>
         )}
-        {/* {[].map((comment) => (
-          <Comment
-            key={comment.id}
-            comment={comment}
+        {chat?.messages.map((message) => (
+          <Message
+            chat={chat}
+            key={message.id}
+            message={message}
             route={props.route}
             navigation={props.navigation}
-            getComments={getComments}
           />
-        ))} */}
+        ))}
       </ScrollView>
       <Surface style={styles.surface}>
         <MDTextInput
+          dense
+          multiline
           value={content}
-          // label='Comment'
+          numberOfLines={lines}
           onChangeText={setContent}
-          // onSubmitEditing={createComment}
+          textAlignVertical='center'
+          // style={{ paddingTop: 10 }} // add experimental mode or fix text component internal position
+          onSubmitEditing={sendMessage}
           placeholder={`Message ${chat?.user.username}`}
           right={
             <PaperTextInput.Icon
               name='send'
-              // onPress={createComment}
+              onPress={sendMessage}
               forceTextInputFocus={false}
               disabled={content.length === 0}
               color={
